@@ -32,12 +32,33 @@ public final class Units {
         public static final double KILOMETER_PER_HOUR = Length.KILOMETER / Time.HOUR;
     }
 
+    /**
+     * Convert units
+     * @param value
+     * @param fromUnit : the unit of value
+     * @param toUnit : the unit we want to convert to
+     * @return value converted in toUnit
+     */
     public static double convert(double value, double fromUnit, double toUnit){
         return value * (fromUnit/toUnit);
     }
+
+    /**
+     * Convert to the basic unit
+     * @param value
+     * @param fromUnit : the unit of value
+     * @return value converted in the basic unit
+     */
     public static double convertFrom(double value, double fromUnit){
         return value * fromUnit;
     }
+
+    /**
+     * Convert from the basic unit to the given unit
+     * @param value
+     * @param toUnit : the unit we want to convert to
+     * @return value converted in toUnit
+     */
     public static double convertTo(double value, double toUnit){
         return value / toUnit;
     }

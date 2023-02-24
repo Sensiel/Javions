@@ -5,25 +5,50 @@ import java.util.HexFormat;
 import java.util.Objects;
 
 public final class ByteString {
-    public final byte[] bytes; // TODO PEUT ETRE METTRE EN private
+    private final byte[] bytes;
+
+    /**
+     * Public Constructor
+     * @param bytes : Array of bytes
+     */
     public ByteString(byte[] bytes){
         this.bytes = bytes.clone();
     }
+
+    /**
+     * Convert Hexadecimal into an array of bytes then a byteString
+     * @param hexString : String in Hexadecimal representation
+     * @return returns the byteString corresponding to the hexadecimal representation of the argument
+     */
     public static ByteString ofHexadecimalString(String hexString){
         if(hexString.length()%2 == 1) throw new IllegalArgumentException();
         HexFormat hf = HexFormat.of().withUpperCase();
         return new ByteString(hf.parseHex(hexString));
     }
 
+    /**
+     * @return size of the array associated to the ByteString
+     */
     public int size(){
         return bytes.length;
     }
 
+    /**
+     * Extract a byte at the given index
+     * @param index
+     * @return the integer representing the byte at the given index
+     */
     public int byteAt(int index){
         Objects.checkIndex(index, size());
         return bytes[index] & 0xff;
     }
 
+    /**
+     * Extract the bytes between the two indexes given
+     * @param fromIndex
+     * @param toIndex
+     * @return returns the bytes between the indexes fromIndex and toIndex as a long
+     */
     public long bytesInRange(int fromIndex, int toIndex){
         long result = 0;
         if(toIndex - fromIndex > 8) throw new IllegalArgumentException();
