@@ -4,13 +4,11 @@ public final class Math2 {
     private Math2(){
 
     }
-//? pas capté
     /**
-     *
      * @param min
      * @param v
      * @param max
-     * @return
+     * @return the value v clamped between the minimum min and the maximum max
      */
     public static int clamp(int min, int v, int max){
         return Math.min( Math.max(min,v) , max);
