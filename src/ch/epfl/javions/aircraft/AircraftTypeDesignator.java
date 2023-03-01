@@ -1,11 +1,18 @@
 package ch.epfl.javions.aircraft;
 
+import ch.epfl.javions.Preconditions;
+
 import java.util.regex.Pattern;
 
 public record AircraftTypeDesignator(String string) {
     private static final Pattern DesignatorRegex = Pattern.compile("[A-Z0-9]{2,4}");
+    /**
+     * Compact Constructor
+     * @param string
+     * @throws IllegalArgumentException if the given string isn't valid
+     */
     public AircraftTypeDesignator{
-        if(!isValidDesignator(string)) throw new IllegalArgumentException();
+        Preconditions.checkArgument(isValidDesignator(string));
     }
 
     private static boolean isValidDesignator(String string){

@@ -8,7 +8,7 @@ public record GeoPos(int longitudeT32, int latitudeT32){
      * @throws IllegalArgumentException if the given latitude is invalid
      */
     public GeoPos {
-        Preconditions.checkArgument(!isValidLatitudeT32(latitudeT32));
+        Preconditions.checkArgument(isValidLatitudeT32(latitudeT32));
     }
 
     /**

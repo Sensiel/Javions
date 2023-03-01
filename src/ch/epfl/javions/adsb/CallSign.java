@@ -1,11 +1,18 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.Preconditions;
+
 import java.util.regex.Pattern;
 
 public record CallSign(String string) {
     private static final Pattern CallSignRegex = Pattern.compile("[A-Z0-9 ]{0,8}");
+    /**
+     * Compact Constructor
+     * @param string
+     * @throws IllegalArgumentException if the given string isn't valid
+     */
     public CallSign{
-        if(!isValidCallSign(string)) throw new IllegalArgumentException();
+        Preconditions.checkArgument(isValidCallSign(string));
     }
 
     private static boolean isValidCallSign(String string){

@@ -6,6 +6,11 @@ public enum WakeTurbulenceCategory {
     HEAVY,
     UNKNOWN;
 
+    /**
+     * Convert the textual values of the database into elements of the enumerated type
+     * @param s
+     * @return the wake turbulence category corresponding to the given string
+     */
     public static WakeTurbulenceCategory of(String s){
         return switch (s) {
             case "L" -> LIGHT;

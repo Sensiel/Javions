@@ -21,7 +21,7 @@ public final class ByteString {
      * @return returns the byteString corresponding to the hexadecimal representation of the argument
      */
     public static ByteString ofHexadecimalString(String hexString){
-        Preconditions.checkArgument(hexString.length()%2 == 1);
+        Preconditions.checkArgument(hexString.length()%2 == 0);
         HexFormat hf = HexFormat.of().withUpperCase();
         return new ByteString(hf.parseHex(hexString));
     }
@@ -51,7 +51,7 @@ public final class ByteString {
      */
     public long bytesInRange(int fromIndex, int toIndex){
         long result = 0;
-        Preconditions.checkArgument(toIndex - fromIndex > 8);
+        Preconditions.checkArgument(toIndex - fromIndex <= 8);
         Objects.checkFromToIndex(fromIndex, toIndex, size());
         for(int index = fromIndex; index < toIndex; index++){
             result |= bytes[index] & 0xff;

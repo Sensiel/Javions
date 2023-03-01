@@ -14,7 +14,7 @@ public class Bits {
      * @return an unsigned value corresponding to the extracted bits
      */
     public static int extractUInt(long value, int start, int size){
-        Preconditions.checkArgument(size <= 0 || size >= Integer.SIZE);
+        Preconditions.checkArgument(size > 0 & size < Integer.SIZE);
         Objects.checkFromIndexSize(start, size, Long.SIZE);
         return (int) ((value >>> start) % (1L << size) );
     }
