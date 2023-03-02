@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AircraftDescriptionTest {
     @Test
     void AircraftDescriptionThrowsOnInvalidString() {
-        assertThrows(IllegalArgumentException.class, () -> new AircraftTypeDesignator("l1p")); // caractères invalides
-        assertThrows(IllegalArgumentException.class, () -> new AircraftTypeDesignator("L9P"));
+        assertThrows(IllegalArgumentException.class, () -> new AircraftDescription("l1p")); // caractères invalides
+        assertThrows(IllegalArgumentException.class, () -> new AircraftDescription("L9P"));
     }
     @Test
     void AircraftDescriptionWorksOnTrivialString() {

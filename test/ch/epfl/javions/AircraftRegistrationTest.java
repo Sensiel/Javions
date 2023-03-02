@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AircraftRegistrationTest {
     @Test
     void AircraftRegistrationThrowsOnInvalidString() {
-        assertThrows(IllegalArgumentException.class, () -> new AircraftTypeDesignator(""));
-        assertThrows(IllegalArgumentException.class, () -> new AircraftTypeDesignator("n9686m")); // caractères invalides
+        assertThrows(IllegalArgumentException.class, () -> new AircraftRegistration(""));
+        assertThrows(IllegalArgumentException.class, () -> new AircraftRegistration("n9686m")); // caractères invalides
 
     }
 

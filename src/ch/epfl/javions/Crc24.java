@@ -1,5 +1,7 @@
 package ch.epfl.javions;
 
+import java.util.HexFormat;
+
 public final class Crc24 {
     public final static int GENERATOR = 0xFFF409; // pour extraire les 24 bits de poids faible
     public int[] table;
@@ -19,21 +21,19 @@ public final class Crc24 {
      * @return the CRC24 associated to the given array of bytes
      */
     public int crc(byte[] bytes){
-        return crc_bitwise(GENERATOR,bytes);
-    }
-        /*
+
         int crc = 0;
         for (byte aByte : bytes) {
-            crc = ((crc << 8) | aByte) ^ table[Bits.extractUInt(crc, GeneratorLength - Byte.SIZE, 8)];
+            crc = ((crc << Byte.SIZE) | Byte.toUnsignedInt(aByte)) ^ table[Bits.extractUInt(crc, GeneratorLength - Byte.SIZE, Byte.SIZE)];
         }
-        for(int i = 0; i < 3 ;++i){ //augmentation message
-            crc = ((crc << 8) ^ table[Bits.extractUInt(crc, GeneratorLength - Byte.SIZE, 1)]);
+        for(int i = 0; i < 3 ; i++){ //augmentation message
+            crc = ((crc << Byte.SIZE) ^ table[Bits.extractUInt(crc, GeneratorLength - Byte.SIZE, Byte.SIZE)]);
         }
         crc = Bits.extractUInt(crc,0,GeneratorLength);
         return crc;
     }
 
-         */
+
 
     /**
      * Calculate the CRC24 bit by bit
@@ -46,14 +46,16 @@ public final class Crc24 {
         int[] table = new int[]{0,GENERATOR};
         for (byte b : bytes) {
             for (int j = 7; j >= 0; j--) {
-                crc = ((crc << 1 | Bits.extractUInt(b, j, 1)) ^ table[Bits.extractUInt(crc, GeneratorLength - 1, 1)]);
+                int currMessageBit = Bits.extractUInt(Byte.toUnsignedLong(b), j, 1);
+                int currCRCBit = Bits.extractUInt(crc, GeneratorLength - 1, 1);
+                crc = ((crc << 1 | currMessageBit) ^ table[currCRCBit]);
             }
         }
-        for(int i = 0;i < 24; ++i){ //augmentation message
-            crc = ((crc << 1) ^ table[Bits.extractUInt(crc, GeneratorLength - 1, 1)]);
+        for(int i = 0; i < 24; i++){ //augmentation message
+            int currCRCBit = Bits.extractUInt(crc, GeneratorLength - 1, 1);
+            crc = ((crc << 1) ^ table[currCRCBit]);
         }
         crc = Bits.extractUInt(crc,0,GeneratorLength);
-
         return crc;
     }
 
