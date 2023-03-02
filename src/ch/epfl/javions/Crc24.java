@@ -21,7 +21,6 @@ public final class Crc24 {
      * @return the CRC24 associated to the given array of bytes
      */
     public int crc(byte[] bytes){
-
         int crc = 0;
         for (byte aByte : bytes) {
             crc = ((crc << Byte.SIZE) | Byte.toUnsignedInt(aByte)) ^ table[Bits.extractUInt(crc, GeneratorLength - Byte.SIZE, Byte.SIZE)];
@@ -43,7 +42,7 @@ public final class Crc24 {
      */
     private static int crc_bitwise(int generator, byte[] bytes){
         int crc = 0;
-        int[] table = new int[]{0,GENERATOR};
+        int[] table = new int[]{0,generator};
         for (byte b : bytes) {
             for (int j = 7; j >= 0; j--) {
                 int currMessageBit = Bits.extractUInt(Byte.toUnsignedLong(b), j, 1);
@@ -67,7 +66,7 @@ public final class Crc24 {
     static int[] buildTable(int generator){
         int[] table = new int[256];
         for(int i = 0; i < 256 ; ++i ){
-            table[i]=crc_bitwise(generator, new byte[]{(byte) i});
+            table[i] = crc_bitwise(generator, new byte[]{(byte) i});
         }
         return table;
     }

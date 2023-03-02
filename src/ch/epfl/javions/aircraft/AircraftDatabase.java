@@ -31,26 +31,31 @@ public final class AircraftDatabase {
      * @return the aircraftData associated to given IcaoAddress
      */
     public AircraftData get(IcaoAddress address) throws IOException {
-        String csvFileName = address.string().substring(4, 5);
+        String csvFileName = address.string().substring(4, 6) + ".csv";
+        //System.out.println(csvFileName + " " + address.string());
         try (ZipFile zipFile = new ZipFile(fileName);
              InputStream fileInZip = zipFile.getInputStream(zipFile.getEntry(csvFileName));
              Reader fileInZipReader = new InputStreamReader(fileInZip, UTF_8);
              BufferedReader b = new BufferedReader(fileInZipReader)) {
+
             String l = "";
             while ((l = b.readLine()) != null) {
-                if ((b.readLine()).startsWith(address.string())) {
-                    l = b.readLine();
+                if (l.compareTo(address.string()) >= 0) {
+                    break;
                 }
             }
-                String[] aircraftData = l.split(",");
-                AircraftRegistration registration = new AircraftRegistration(aircraftData[REGISTRATION_INDEX]);//meilleure encapsulation pour ce bloc ?
-                AircraftDescription description = new AircraftDescription(aircraftData[DESCRIPTION_INDEX]);
-                AircraftTypeDesignator designator = new AircraftTypeDesignator(aircraftData[DESIGNATOR_INDEX]);
-                WakeTurbulenceCategory wakeTurbulenceCategory = WakeTurbulenceCategory.of(aircraftData[WTC_INDEX]);
-                String model = aircraftData[MODEL_INDEX];
-                return new AircraftData(registration, designator, model, description, wakeTurbulenceCategory);
+            if(l == null || !l.startsWith(address.string())){
+                return null;
             }
 
+            String[] aircraftData = l.split(",");
+            AircraftRegistration registration = new AircraftRegistration(aircraftData[REGISTRATION_INDEX]);//meilleure encapsulation pour ce bloc ?
+            AircraftDescription description = new AircraftDescription(aircraftData[DESCRIPTION_INDEX]);
+            AircraftTypeDesignator designator = new AircraftTypeDesignator(aircraftData[DESIGNATOR_INDEX]);
+            WakeTurbulenceCategory wakeTurbulenceCategory = WakeTurbulenceCategory.of(aircraftData[WTC_INDEX]);
+            String model = aircraftData[MODEL_INDEX];
+            return new AircraftData(registration, designator, model, description, wakeTurbulenceCategory);
         }
     }
+}
 
