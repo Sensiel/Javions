@@ -1,6 +1,7 @@
 package ch.epfl.javions.aircraft;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 
@@ -31,24 +32,24 @@ public final class AircraftDatabase {
      * @return the aircraftData associated to given IcaoAddress
      */
     public AircraftData get(IcaoAddress address) throws IOException {
-        String csvFileName = address.string().substring(4, 6) + ".csv";
         //System.out.println(csvFileName + " " + address.string());
+        String csvFileName = address.string().substring(4, 6) + ".csv";
         try (ZipFile zipFile = new ZipFile(fileName);
              InputStream fileInZip = zipFile.getInputStream(zipFile.getEntry(csvFileName));
              Reader fileInZipReader = new InputStreamReader(fileInZip, UTF_8);
              BufferedReader b = new BufferedReader(fileInZipReader)) {
 
-            String l = "";
-            while ((l = b.readLine()) != null) {
-                if (l.compareTo(address.string()) >= 0) {
+            String currLine = "";
+            while ((currLine = b.readLine()) != null) {
+                if (currLine.compareTo(address.string()) >= 0) {
                     break;
                 }
             }
-            if(l == null || !l.startsWith(address.string())){
+            if(currLine == null || !currLine.startsWith(address.string())){
                 return null;
             }
 
-            String[] aircraftData = l.split(",");
+            String[] aircraftData = currLine.split(",", -1);
             AircraftRegistration registration = new AircraftRegistration(aircraftData[REGISTRATION_INDEX]);//meilleure encapsulation pour ce bloc ?
             AircraftDescription description = new AircraftDescription(aircraftData[DESCRIPTION_INDEX]);
             AircraftTypeDesignator designator = new AircraftTypeDesignator(aircraftData[DESIGNATOR_INDEX]);
