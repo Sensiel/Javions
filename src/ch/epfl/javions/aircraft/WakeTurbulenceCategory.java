@@ -8,7 +8,7 @@ public enum WakeTurbulenceCategory {
 
     /**
      * Convert the textual values of the database into elements of the enumerated type
-     * @param s
+     * @param s : the abbreviation of the WTC
      * @return the wake turbulence category corresponding to the given string
      */
     public static WakeTurbulenceCategory of(String s){

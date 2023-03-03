@@ -1,8 +1,6 @@
 package ch.epfl.javions;
 
 import ch.epfl.javions.aircraft.AircraftDescription;
-import ch.epfl.javions.aircraft.AircraftRegistration;
-import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

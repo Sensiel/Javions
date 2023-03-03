@@ -3,7 +3,7 @@ package ch.epfl.javions;
 import java.util.HexFormat;
 
 public final class Crc24 {
-    public final static int GENERATOR = 0xFFF409; // pour extraire les 24 bits de poids faible
+    public final static int GENERATOR = 0xFFF409;
     public int[] table;
     public static final int GeneratorLength = 24;
 
@@ -50,7 +50,7 @@ public final class Crc24 {
                 crc = ((crc << 1 | currMessageBit) ^ table[currCRCBit]);
             }
         }
-        for(int i = 0; i < 24; i++){ //augmentation message
+        for(int i = 0; i < 24; i++) { //augmentation message
             int currCRCBit = Bits.extractUInt(crc, GeneratorLength - 1, 1);
             crc = ((crc << 1) ^ table[currCRCBit]);
         }
