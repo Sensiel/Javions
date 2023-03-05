@@ -6,7 +6,7 @@ import java.util.HexFormat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class Crc24Test {
+class Crc24Test {
     @Test
     void TestCRC24() {
         Crc24 crc24 = new Crc24(Crc24.GENERATOR);

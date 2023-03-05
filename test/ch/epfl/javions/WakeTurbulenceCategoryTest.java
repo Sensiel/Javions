@@ -4,7 +4,7 @@ import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class WakeTurbulenceCategoryTest {
+class WakeTurbulenceCategoryTest {
     @Test
     void workOnTheRightAbbreviations(){
         assertEquals(WakeTurbulenceCategory.HEAVY,WakeTurbulenceCategory.of("H"));

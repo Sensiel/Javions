@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class IcaoAddressTest {
+class IcaoAddressTest {
     @Test
     void IcaoAddressThrowsOnInvalidString(){
         assertThrows(IllegalArgumentException.class,() -> new IcaoAddress(""));

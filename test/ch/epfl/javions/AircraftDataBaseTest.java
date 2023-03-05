@@ -11,7 +11,7 @@ import java.nio.file.NoSuchFileException;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AircraftDataBaseTest {
+class AircraftDataBaseTest {
     @Test
     void CorrectAircraftDataBaseGet() throws IOException {
         String archiveFile = getClass().getResource("/aircraft.zip").getFile();

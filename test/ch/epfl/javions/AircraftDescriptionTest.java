@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class AircraftDescriptionTest {
+class AircraftDescriptionTest {
     @Test
     void AircraftDescriptionThrowsOnInvalidString() {
         assertThrows(IllegalArgumentException.class, () -> new AircraftDescription("l1p")); // caractères invalides
