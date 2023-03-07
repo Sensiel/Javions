@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-class SampleDecoderTest {
+class SamplesDecoderTest {
     @Test
     void TrivialDecoderTest() throws IOException {
         InputStream input = new ByteArrayInputStream(new byte[]{(byte) 0xFD, (byte)0x07});

@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-public final class SamplesDecoder {
+public final class  SamplesDecoder {
 
     private byte[] batch;
 
@@ -16,7 +16,7 @@ public final class SamplesDecoder {
 
     public SamplesDecoder(InputStream stream, int batchSize){
         Objects.requireNonNull(stream);
-        Preconditions.checkArgument(batchSize > 0);
+         Preconditions.checkArgument(batchSize > 0);
         batch = new byte[batchSize * 2];
         this.batchSize = batchSize;
         this.stream = stream;
