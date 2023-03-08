@@ -26,6 +26,7 @@ public final class PowerWindow {
         Preconditions.checkArgument(windowSize > 0 && windowSize <= BATCH_SIZE);
         powerComputer = new PowerComputer(stream, BATCH_SIZE);
         this.windowSize = windowSize;
+        batch1 = new int[BATCH_SIZE];
         nSampleRead = powerComputer.readBatch(batch1);
         batch2 = new int[BATCH_SIZE];
     }
@@ -48,7 +49,7 @@ public final class PowerWindow {
      * @return true if the window is full
      */
     public boolean isFull(){
-        return ((position()+size())%BATCH_SIZE >= nSampleRead);
+        return !((position()+size())%BATCH_SIZE >= nSampleRead);
     }
 
     /**
@@ -73,7 +74,7 @@ public final class PowerWindow {
     public void advance() throws IOException{
         WindowPos += 1;
         if(position() % BATCH_SIZE + size() >= BATCH_SIZE ){ //The window overlaps the second batch
-            int n = powerComputer.readBatch(batch2);
+            nSampleRead = powerComputer.readBatch(batch2);
         }
         if(position() % BATCH_SIZE == 0 && position()  >= BATCH_SIZE){ //The window is totally contained in the second batch
             batch1 = batch2.clone();
