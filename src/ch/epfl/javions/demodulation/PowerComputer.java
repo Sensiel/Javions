@@ -37,15 +37,15 @@ public final class PowerComputer {
         Preconditions.checkArgument(batch.length == batchSize);
         int nSampleRead = samplesDecoder.readBatch(this.batch);
         currSample = new short[8];
-        for(int iPowerSample = 0; iPowerSample < batchSize; iPowerSample++){
-            int iSample = iPowerSample*2;
+        int nPowerSampleRead = (int)Math.floor(nSampleRead/2f);
+        for(int iPowerSample = 0; iPowerSample < nPowerSampleRead; iPowerSample++){
+            int iSample = iPowerSample * 2;
             currSample[iSample % 8] = this.batch[iSample];
             currSample[(iSample + 1) % 8] = this.batch[iSample + 1];
              // The following formula is P(n) but we added 8 to each index used in the formula ( because (iSample - 6)%8 == (iSample + 2)%8 and it's easier to calculate)
                 batch[iPowerSample] = (int)Math.pow(currSample[(iSample + 2) % 8] - currSample[(iSample + 4) % 8] + currSample[(iSample + 6) % 8] - currSample[iSample % 8], 2)
-                +  (int)Math.pow(currSample[(iSample + 1) % 8] - currSample[(iSample + 3) % 8] + currSample[(iSample + 5) % 8] - currSample[(iSample + 7) % 8], 2);
+                +  (int)Math.pow(currSample[(iSample + 3) % 8] - currSample[(iSample + 5) % 8] + currSample[(iSample + 7) % 8] - currSample[(iSample + 1) % 8], 2);
         }
-
-        return nSampleRead;
+        return nPowerSampleRead;
     }
 }

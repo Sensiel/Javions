@@ -76,7 +76,7 @@ public final class PowerWindow {
             int n = powerComputer.readBatch(batch2);
         }
         if(position() % BATCH_SIZE == 0 && position()  >= BATCH_SIZE){ //The window is totally contained in the second batch
-            batch1 = batch2;
+            batch1 = batch2.clone();
         }
     }
 
