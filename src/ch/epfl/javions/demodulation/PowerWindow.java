@@ -4,13 +4,14 @@ import ch.epfl.javions.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 public final class PowerWindow {
     private final static int BATCH_SIZE = 1 << 16;
-    private int[] batchpos1;
-    private int[] batchpos2;
-    private int windowSize;
-    private PowerComputer powerComputer;
+    private int[] batch1;
+    private int[] batch2;
+    private final int windowSize;
+    private final PowerComputer powerComputer;
     private static long WindowPos = 0;
     private static int nSampleRead;
 
@@ -25,9 +26,8 @@ public final class PowerWindow {
         Preconditions.checkArgument(windowSize > 0 && windowSize <= BATCH_SIZE);
         powerComputer = new PowerComputer(stream, BATCH_SIZE);
         this.windowSize = windowSize;
-        nSampleRead = powerComputer.readBatch(batchpos1);
-        batchpos2 = new int[BATCH_SIZE];
-
+        nSampleRead = powerComputer.readBatch(batch1);
+        batch2 = new int[BATCH_SIZE];
     }
 
     /**
@@ -48,7 +48,7 @@ public final class PowerWindow {
      * @return true if the window is full
      */
     public boolean isFull(){
-        return ( nSampleRead - WindowPos >= size());
+        return ((position()+size())%BATCH_SIZE >= nSampleRead);
     }
 
     /**
@@ -56,14 +56,14 @@ public final class PowerWindow {
      * @return the power sample at the given index of the window
      */
     public int get(int i){
-            if( i < 0 || i >= windowSize) throw new IndexOutOfBoundsException();
-            int i1 = (int) position() % BATCH_SIZE + i ; // pour meilleure encapsulation , oui ou pas la peine ?
-            if(position() % BATCH_SIZE + i >= BATCH_SIZE) {
-                return batchpos2[i1 % BATCH_SIZE];
-            }
-            else {
-                return batchpos1[i1]; }
-
+        Objects.checkIndex(i, size());
+        int newIndex = (int) position() % BATCH_SIZE + i;
+        if(newIndex >= BATCH_SIZE) {
+            return batch2[newIndex % BATCH_SIZE];
+        }
+        else {
+            return batch1[newIndex];
+        }
     }
 
     /**
@@ -71,13 +71,14 @@ public final class PowerWindow {
      * @throws IOException if there's an input/output error since we're using readBatch(short[]) from PowerComputer
      */
     public void advance() throws IOException{
-        WindowPos +=1 ;
-        if(WindowPos % BATCH_SIZE + size() >= BATCH_SIZE ){ //The window overlaps the second batch
-            int n = powerComputer.readBatch(batchpos2);}
-        if(WindowPos % BATCH_SIZE == 0 && WindowPos >= BATCH_SIZE){ //The window is totally contained in the second batch
-                batchpos1 = batchpos2 ;
-            }
+        WindowPos += 1;
+        if(position() % BATCH_SIZE + size() >= BATCH_SIZE ){ //The window overlaps the second batch
+            int n = powerComputer.readBatch(batch2);
         }
+        if(position() % BATCH_SIZE == 0 && position()  >= BATCH_SIZE){ //The window is totally contained in the second batch
+            batch1 = batch2;
+        }
+    }
 
     /**
      * Advance the Window's position by the given number of samples
@@ -85,9 +86,9 @@ public final class PowerWindow {
      * @throws IOException if there's an input/output error since we're using advance()
      */
     public void advanceBy(int offset) throws IOException{
-            Preconditions.checkArgument(offset > 0 );
-            for(int i =1; i<= offset ; i++){
+        Preconditions.checkArgument(offset > 0);
+        for(int i = 1; i <= offset; i++){
             advance();
-            }
+        }
     }
 }
