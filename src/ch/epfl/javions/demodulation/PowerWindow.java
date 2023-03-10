@@ -49,7 +49,7 @@ public final class PowerWindow {
      * @return true if the window is full
      */
     public boolean isFull(){
-        return !((position()+size())%BATCH_SIZE >= nSampleRead);
+        return ((position()+size())%BATCH_SIZE <= nSampleRead);
     }
 
     /**
