@@ -13,12 +13,12 @@ public class PowerWindowTest {
                 new BufferedInputStream(
                         new FileInputStream(new File("resources/samples.bin"))));
         PowerWindow pWin = new PowerWindow(stream, 160);
-        System.out.println(pWin.get(0));
+        //System.out.println(pWin.get(0));
         pWin.advance();
-        System.out.println(pWin.get(0));
+        //System.out.println(pWin.get(0));
         pWin.advanceBy(1040);
-        System.out.println(pWin.get(0));
-        System.out.println(pWin.position() + " " + pWin.isFull());
+        //System.out.println(pWin.get(0));
+        //System.out.println(pWin.position() + " " + pWin.isFull());
     }
 
 }
