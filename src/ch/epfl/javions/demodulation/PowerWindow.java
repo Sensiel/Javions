@@ -12,8 +12,8 @@ public final class PowerWindow {
     private int[] batch2;
     private final int windowSize;
     private final PowerComputer powerComputer;
-    private static long WindowPos = 0;
-    private static int nSampleRead;
+    private long WindowPos = 0;
+    private int nSampleRead;
 
     /**
      * Public Constructor
@@ -49,6 +49,7 @@ public final class PowerWindow {
      * @return true if the window is full
      */
     public boolean isFull(){
+        System.out.println(position() + " " + size() + " " + nSampleRead);
         return ((position()+size())%BATCH_SIZE <= nSampleRead);
     }
 
@@ -73,7 +74,7 @@ public final class PowerWindow {
      */
     public void advance() throws IOException{
         WindowPos += 1;
-        if(position() % BATCH_SIZE + size() >= BATCH_SIZE ){ //The window overlaps the second batch
+        if((position() % BATCH_SIZE) + size() == BATCH_SIZE ){ //The window overlaps the second batch
             nSampleRead = powerComputer.readBatch(batch2);
         }
         if(position() % BATCH_SIZE == 0 && position()  >= BATCH_SIZE){ //The window is totally contained in the second batch

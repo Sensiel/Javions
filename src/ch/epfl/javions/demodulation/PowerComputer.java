@@ -20,10 +20,11 @@ public final class PowerComputer {
      * @throws IllegalArgumentException if the given batchSize is not a multiple of 8 or if it is negative
      */
     public PowerComputer(InputStream stream, int batchSize){
-        Preconditions.checkArgument(batchSize % 8 == 0 && batchSize >= 0);
+        Preconditions.checkArgument(batchSize % 8 == 0 && batchSize > 0);
         samplesDecoder = new SamplesDecoder(stream, batchSize * 2);
         sampleBatch = new short[batchSize * 2];
         this.batchSize = batchSize;
+        currSample = new short[8];
     }
 
     /**
@@ -36,7 +37,6 @@ public final class PowerComputer {
     public int readBatch(int[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
         int nSampleRead = samplesDecoder.readBatch(this.sampleBatch);
-        currSample = new short[8];
         int nPowerSampleRead = (int)Math.floor(nSampleRead/2f);
         for(int iPowerSample = 0; iPowerSample < nPowerSampleRead; iPowerSample++){
             int iSample = iPowerSample * 2;
