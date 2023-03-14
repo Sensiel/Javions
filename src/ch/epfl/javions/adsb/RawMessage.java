@@ -6,8 +6,12 @@ import ch.epfl.javions.Crc24;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+import java.util.HexFormat;
+
 public record RawMessage(long timeStampsNs, ByteString bytes) {
     public static final int LENGTH = 14;
+    private static final int DF_VALUE = 17;
+
     public RawMessage{
         Preconditions.checkArgument(timeStampsNs >= 0 && bytes.size() == LENGTH );
     }
@@ -23,7 +27,7 @@ public record RawMessage(long timeStampsNs, ByteString bytes) {
 
     public static int size(byte byte0){
         int DF = Bits.extractUInt(Byte.toUnsignedInt(byte0),3,5); // est ce que je dois convertir le byte0 en long ?
-        if(DF == 17){
+        if(DF == DF_VALUE){
             return LENGTH;
         } else{
             System.out.println("The message is not of a known type"); //jsp si j'ai bien capté l'énoncé
@@ -41,9 +45,7 @@ public record RawMessage(long timeStampsNs, ByteString bytes) {
 
     public IcaoAddress icaoAddress(){
         long icaoAddress = bytes.bytesInRange(1,3);
-        String hexString = Long.toHexString(icaoAddress);
-        // je sais pas si y'a une meilleure maniere d'implementer
-        // cette methode en utilisant les methodes de byteString
+        String hexString = HexFormat.of().withUpperCase().toHexDigits(icaoAddress);
         return new IcaoAddress(hexString);
     }
 
