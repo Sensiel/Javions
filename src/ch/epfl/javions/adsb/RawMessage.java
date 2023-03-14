@@ -20,16 +20,14 @@ public record RawMessage(long timeStampsNs, ByteString bytes) {
         int crc24 = new Crc24(Crc24.GENERATOR).crc(bytes);
         if (crc24 == 0) {
             return new RawMessage(timeStampsNs, new ByteString (bytes));
-        } else {
-            return null;
         }
+        else return null;
     }
 
     public static int size(byte byte0){
-        int DF = Bits.extractUInt(Byte.toUnsignedInt(byte0),3,5); // est ce que je dois convertir le byte0 en long ?
-        if(DF == DF_VALUE){
-            return LENGTH;
-        } else{
+        int DF = Bits.extractUInt(Byte.toUnsignedLong(byte0),3,5); // est ce que je dois convertir le byte0 en long ?
+        if(DF == DF_VALUE) return LENGTH;
+        else{
             System.out.println("The message is not of a known type"); //jsp si j'ai bien capté l'énoncé
             return 0;
         }
@@ -40,7 +38,7 @@ public record RawMessage(long timeStampsNs, ByteString bytes) {
     }
 
     public int downLinkFormat(){
-        return Bits.extractUInt(bytes.byteAt(0),3,5);
+        return Bits.extractUInt(Integer.toUnsignedLong(bytes.byteAt(0)),3,5); // Potentiellement des bug là
     }
 
     public IcaoAddress icaoAddress(){
