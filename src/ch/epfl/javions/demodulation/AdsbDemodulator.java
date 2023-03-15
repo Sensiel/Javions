@@ -7,7 +7,7 @@ import java.io.InputStream;
 
 public final class AdsbDemodulator {
     private final PowerWindow demodulator;
-    private static final long DURATION_2_SAMPLES = 4; //jsp c quoi la valeur le prof veut pas me la passer :/
+    private static final long DURATION_2_SAMPLES = 100;
 
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         demodulator = new PowerWindow(samplesStream, 1200);
@@ -53,7 +53,6 @@ public final class AdsbDemodulator {
                 return RawMessage.of(timeStamp,bytes);
             }
             else demodulator.advance();
-            // horodotage #345
         }
         return null;
     }
