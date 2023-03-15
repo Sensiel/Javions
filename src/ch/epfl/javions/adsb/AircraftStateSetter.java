@@ -8,5 +8,6 @@ public interface AircraftStateSetter {
     void setCallSign(CallSign callSign);
     void setPosition(GeoPos position);
     void setAltitude(double altitude);
-    void setVelocity(double velocity);void setTrackOrHeading(double trackOrHeading);
+    void setVelocity(double velocity);
+    void setTrackOrHeading(double trackOrHeading);
 }

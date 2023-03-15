@@ -8,12 +8,12 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 
 import java.util.HexFormat;
 
-public record RawMessage(long timeStampsNs, ByteString bytes) {
+public record RawMessage(long timeStampNs, ByteString bytes) {
     public static final int LENGTH = 14;
     private static final int DF_VALUE = 17;
 
     public RawMessage{
-        Preconditions.checkArgument(timeStampsNs >= 0 && bytes.size() == LENGTH );
+        Preconditions.checkArgument(timeStampNs >= 0 && bytes.size() == LENGTH );
     }
 
     public static RawMessage of(long timeStampsNs, byte[] bytes) {
@@ -25,12 +25,11 @@ public record RawMessage(long timeStampsNs, ByteString bytes) {
     }
 
     public static int size(byte byte0){
+        //System.out.println(Integer.toBinaryString(byte0 & 0xFF));
         int DF = Bits.extractUInt(Byte.toUnsignedLong(byte0),3,5); // est ce que je dois convertir le byte0 en long ?
+        //System.out.println(Integer.toBinaryString(DF));
         if(DF == DF_VALUE) return LENGTH;
-        else{
-            System.out.println("The message is not of a known type"); //jsp si j'ai bien capté l'énoncé
-            return 0;
-        }
+        return 0;
     }
 
     public static int typeCode(long payload){
@@ -50,7 +49,7 @@ public record RawMessage(long timeStampsNs, ByteString bytes) {
     public long payload(){
         return bytes().bytesInRange(4,10);
     }
-    public int typecode(){
+    public int typeCode(){
         return typeCode(payload());
     }
 }
