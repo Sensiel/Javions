@@ -7,12 +7,14 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
 import java.util.HexFormat;
+import java.util.Objects;
 
 public record RawMessage(long timeStampNs, ByteString bytes) {
     public static final int LENGTH = 14;
     private static final int DF_VALUE = 17;
 
     public RawMessage{
+        Objects.requireNonNull(bytes);
         Preconditions.checkArgument(timeStampNs >= 0 && bytes.size() == LENGTH );
     }
 
@@ -25,9 +27,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     public static int size(byte byte0){
-        //System.out.println(Integer.toBinaryString(byte0 & 0xFF));
-        int DF = Bits.extractUInt(Byte.toUnsignedLong(byte0),3,5); // est ce que je dois convertir le byte0 en long ?
-        //System.out.println(Integer.toBinaryString(DF));
+        int DF = Bits.extractUInt(Byte.toUnsignedLong(byte0),3,5);
         if(DF == DF_VALUE) return LENGTH;
         return 0;
     }
@@ -41,13 +41,13 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     public IcaoAddress icaoAddress(){
-        long icaoAddress = bytes.bytesInRange(1,3);
-        String hexString = HexFormat.of().withUpperCase().toHexDigits(icaoAddress);
+        long icaoAddress = bytes.bytesInRange(1,4);
+        String hexString = HexFormat.of().withUpperCase().toHexDigits(icaoAddress).substring(10);
         return new IcaoAddress(hexString);
     }
 
     public long payload(){
-        return bytes().bytesInRange(4,10);
+        return bytes().bytesInRange(4,11);
     }
     public int typeCode(){
         return typeCode(payload());
