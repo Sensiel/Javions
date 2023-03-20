@@ -17,7 +17,7 @@ public final class SamplesDecoder {
     /**
      * Public Constructor
      * @param stream : the input stream given to get the bytes from the AirSpy radio
-     * @param batchSize
+     * @param batchSize : the size of the batch
      * @throws NullPointerException if the given batch size is not strictly positive
      * @throws IllegalArgumentException if the given stream is null
      */

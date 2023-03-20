@@ -11,26 +11,38 @@ public class CprDecoder {
     private static final int LARGEUR_1 = 1 / ZLAT1;
 
     private CprDecoder() {} //pour le rendre non instanciable
+
+    /**
+     * Evaluate the geographical positions from the given positions
+     * @param x0 : the local longitude of an even message
+     * @param y0 : the local latitude of an even message
+     * @param x1 : the local longitude of an odd message
+     * @param y1 : the local latitude of an odd message
+     * @param mostRecent : the parity of the most recent message
+     * @return the geographical position corresponding to the given normalized local positions
+     */
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
         //latitude
-        double resultLat = 0;
-        y0 = y0 / (1 << 17);
-        y1 = y1 / (1 << 17);
+        double resultLat;
+        double latPair, latImp;
+        y0 = Math.scalb(y0,-17);
+        y1 = Math.scalb(y1,-17);
         double zoneLat = Math.rint((y0 * ZLAT1) - (y1 * ZLAT0));
         if (zoneLat < 0) {
-            if (mostRecent == 0) {
-                resultLat = LARGEUR_0 * ((zoneLat + ZLAT0) + y0);
-            } else {
-                resultLat = LARGEUR_1 * ((zoneLat + ZLAT1) + y1);
-            }
+                latPair = LARGEUR_0 * ((zoneLat + ZLAT0) + y0);
+                latImp = LARGEUR_1 * ((zoneLat + ZLAT1) + y1);
         } else {
-            if (mostRecent == 0) {
-                resultLat = LARGEUR_0 * (zoneLat + y0);
-            } else {
-                resultLat = LARGEUR_1 * (zoneLat + y1);
-            }
+                latPair = LARGEUR_0 * (zoneLat + y0);
+                latImp = LARGEUR_1 * (zoneLat + y1);
         }
+
+        if(mostRecent == 0){
+            resultLat = latPair;
+        } else {
+            resultLat = latImp;
+        }
+
         //creer methode prv pour check validité de lat
         double resultLatDegree = Units.convert(resultLat, Units.Angle.TURN, Units.Angle.DEGREE);
 
@@ -40,9 +52,15 @@ public class CprDecoder {
         // fin latitude
 
         // debut longitude
-        double resultLong = 0;
-        x0 = x0 / (1 << 17);
-        x1 = x1 / (1 << 17);
+
+        // verification de l'égalité des zones
+        double aImp = Math.acos(1 - ((1 - Math.cos(2 * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(latImp), 2)));
+        double aPair = Math.acos(1 - ((1 - Math.cos(2 * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(latPair), 2)));
+        if(aPair != aImp){ return null; }
+
+        double resultLong;
+        x0 = Math.scalb(x0,-17);
+        x1 = Math.scalb(x1,-17);
         double A = Math.acos(1 - ((1 - Math.cos(2 * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(resultLat), 2)));
         if (Double.isNaN(A)) {// normalement je dois utiliser isNaN()
             if (mostRecent == 0) {

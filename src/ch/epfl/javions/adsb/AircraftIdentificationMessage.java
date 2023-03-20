@@ -10,11 +10,23 @@ public record AircraftIdentificationMessage (long timeStampNs,
                                              IcaoAddress icaoAddress,
                                              int category,
                                              CallSign callSign) implements Message{
+    /**
+     * Compact Constructor
+     * @param timeStampNs : the time stamp of the message, expressed in nanoseconds from a given origin
+     * @param icaoAddress : the ICAO address of the sender of the message
+     * @param category : the aircraft category
+     * @param callSign : the callSign
+     */
     public AircraftIdentificationMessage{
         Objects.requireNonNull(icaoAddress);
         Objects.requireNonNull(callSign);
         Preconditions.checkArgument(timeStampNs >= 0);
     }
+
+    /**
+     * @param rawMessage : a raw ADS-B message
+     * @return the identification message associated to the given raw message
+     */
     public static AircraftIdentificationMessage of(RawMessage rawMessage){
         String string = "";
         for(int i = 7; i >= 0 ; i--){

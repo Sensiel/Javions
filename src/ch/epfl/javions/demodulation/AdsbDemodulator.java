@@ -10,11 +10,20 @@ public final class AdsbDemodulator {
     private final PowerWindow window;
     private static final long DURATION_2_SAMPLES = 100;
 
+    /**
+     * Public Constructor
+     * @param samplesStream : the input stream needed to create an instance of PowerWindow
+     * @throws IOException if an input/output error occurs during the creation of the instance of PowerWindow
+     */
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         window = new PowerWindow(samplesStream, 1200);
     }
 
-
+    /**
+     * Evaluate the next ADS-B message of the given sample stream in the constructor
+     * @return a RawMessage associated to the ADS-B message if the end of the sample stream has not been reached
+     * @throws IOException if an input/output error
+     */
     public RawMessage nextMessage() throws IOException {
         if(!window.isFull())
             return null;

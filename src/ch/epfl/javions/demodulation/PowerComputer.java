@@ -29,7 +29,7 @@ public final class PowerComputer {
 
     /**
      * Calculate the power samples and place them in the given array
-     * @param batch
+     * @param batch : the array that will be filled with the power samples
      * @return the number of power samples placed in the given array
      * @throws IOException if there's an input/output error
      * @throws IllegalArgumentException if the size of the given array is not equal to the batchSize given in the constructor
