@@ -32,7 +32,7 @@ public record AircraftIdentificationMessage (long timeStampNs,
         for(int i = 7; i >= 0 ; i--){
             int c = Bits.extractUInt(rawMessage.payload(),i*6,6);
             if((c >= '0' && c <= '9') || c == ' ' || (c >= 1 && c <= 26))
-                string += (char) c;
+                string += (char) (c + 'A');
             else return null;
         }
         CallSign callSign = new CallSign(string);
