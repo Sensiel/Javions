@@ -34,14 +34,16 @@ public record AirbornePositionMessage(long timeStampNs,
      * @return the flight positioning message corresponding to the given raw message
      */
     public static AirbornePositionMessage of(RawMessage rawMessage){
+        if(!((rawMessage.typeCode() >= 9 && rawMessage.typeCode() <= 18) ||(rawMessage.typeCode() >= 20 && rawMessage.typeCode() <= 22)))
+            return null;
         long ME = rawMessage.payload();
         long ALT = Bits.extractUInt(ME,36,12);
 
         double altitudeFinale;
 
         if(Bits.testBit(ALT,4)){
-            int part1 = Bits.extractUInt(ME,5,7);
-            int part2 = Bits.extractUInt(ME,0,4);
+            int part1 = Bits.extractUInt(ALT,5,7);
+            int part2 = Bits.extractUInt(ALT,0,4);
             altitudeFinale = (part1 << 4 | part2)*25d - 1000;
         }
         else {
@@ -54,18 +56,18 @@ public record AirbornePositionMessage(long timeStampNs,
 
             int lowPart = Bits.extractUInt(altitude,0,3);
             int upPart = Bits.extractUInt(altitude,3,9);
-            int lowGray = (lowPart)^(lowPart >> 1)^(lowPart >> 2);
+            lowPart = (lowPart)^(lowPart >> 1)^(lowPart >> 2);
             int upGray = 0;
             for(int i = 0 ; i < 9; i++)
                 upGray ^= upPart >> i;
 
-            if (lowGray == 0 || lowGray == 5 || lowGray == 6) return null;
-            if (lowGray == 7) lowGray = 5;
-            if(upGray % 2 == 1) lowGray = 6 - lowGray;
+            if (lowPart == 0 || lowPart == 5 || lowPart == 6) return null;
+            if (lowPart == 7) lowPart = 5;
+            if(upGray % 2 == 1) lowPart = 6 - lowPart;
 
-            altitudeFinale = Units.convertFrom(-1300 + (lowGray * 100) + (upGray * 500),Units.Length.FOOT);
+            altitudeFinale = -1300 + (lowPart * 100) + (upGray * 500);
         }
-
+        altitudeFinale = Units.convertFrom(altitudeFinale,Units.Length.FOOT);
         double lonLocal = Math.scalb(Bits.extractUInt(ME,0,17),-17);
         double latLocal = Math.scalb(Bits.extractUInt(ME,17,17),-17);
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
