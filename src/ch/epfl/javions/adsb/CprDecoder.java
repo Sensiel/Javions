@@ -34,14 +34,6 @@ public class CprDecoder {
 
         double resultLat;
         resultLat = (mostRecent == 0) ? latPair : latImp;
-
-        //creer methode prv pour check validité de lat
-        double resultLatDegree = Units.convert(resultLat, Units.Angle.TURN, Units.Angle.DEGREE);
-
-        if (resultLatDegree < -90d || resultLatDegree > 90d) return null;
-
-        // fin latitude
-
         // debut longitude
 
         // verification de l'égalité des zones
@@ -55,7 +47,7 @@ public class CprDecoder {
 
         double A = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(resultLat), 2d)));
         double resultLong;
-        if (Double.isNaN(A)) {// normalement je dois utiliser isNaN()
+        if (Double.isNaN(A)) {
             resultLong = (mostRecent == 0) ? x0 : x1;
         }
         else {
@@ -76,9 +68,12 @@ public class CprDecoder {
             resultLong -= Units.Angle.TURN;
         }
 
+        //creer methode prv pour check validité de lat
+        double resultLatDegree = Units.convert(resultLat, Units.Angle.TURN, Units.Angle.DEGREE);
+        if (resultLatDegree < -90d || resultLatDegree > 90d) return null;
+
         int latT32 = (int) Math.rint(Units.convert(resultLat, Units.Angle.TURN, Units.Angle.T32));
         int longT32 = (int) Math.rint(Units.convert(resultLong, Units.Angle.TURN, Units.Angle.T32));
-        // verifier que les nv x1/x0/y1/y0 sont compris entre 0 et 1 ? #661 ?
         return new GeoPos(longT32, latT32);
     }
 }
