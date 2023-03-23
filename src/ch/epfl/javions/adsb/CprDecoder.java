@@ -25,9 +25,6 @@ public class CprDecoder {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
         //latitude
 
-        y0 = Math.scalb(y0,-17);
-        y1 = Math.scalb(y1,-17);
-
         double zoneLat = Math.rint((y0 * ZLAT1) - (y1 * ZLAT0));
         double latPair = (zoneLat < 0d) ? LARGEUR_0 * ((zoneLat + ZLAT0) + y0) : LARGEUR_0 * (zoneLat + y0);
         double latImp = (zoneLat < 0d) ? LARGEUR_1 * ((zoneLat + ZLAT1) + y1) : LARGEUR_1 * (zoneLat + y1);
@@ -36,24 +33,18 @@ public class CprDecoder {
         resultLat = (mostRecent == 0) ? latPair : latImp;
 
         //creer methode prv pour check validité de lat
-        double resultLatDegree = Units.convert(resultLat, Units.Angle.TURN, Units.Angle.DEGREE);
 
-        if (resultLatDegree < -90d || resultLatDegree > 90d) return null;
 
         // fin latitude
 
         // debut longitude
 
-        // verification de l'égalité des zones
         // Faut changer de TURN à Radian je pense
-        double aImp = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(latImp), 2d)));
-        double aPair = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(latPair), 2d)));
-        if(aPair != aImp) return null;
+        double aImp = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(latImp, Units.Angle.TURN)), 2d)));
+        double aPair = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(latPair, Units.Angle.TURN)), 2d)));
+        if(Math.floor(2d * Math.PI / aPair) != Math.floor(2d * Math.PI / aImp)) return null;
 
-        x0 = Math.scalb(x0,-17);
-        x1 = Math.scalb(x1,-17);
-
-        double A = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(resultLat), 2d)));
+        double A = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(resultLat, Units.Angle.TURN) ), 2d)));
         double resultLong;
         if (Double.isNaN(A)) {// normalement je dois utiliser isNaN()
             resultLong = (mostRecent == 0) ? x0 : x1;
@@ -69,16 +60,18 @@ public class CprDecoder {
                 resultLong = (mostRecent == 0) ? (1d / zLong0) * (zoneLong + x0) : (1d / zLong1) * (zoneLong + x1);
         }
         // creer methode prv pour recentrer
-        if (resultLat >= 1d / 2d * Units.Angle.TURN) {
-            resultLat -= Units.Angle.TURN;
+        if (resultLat >= 0.5d) {
+            resultLat -= 1;
         }
-        if (resultLong >= 1d / 2d * Units.Angle.TURN) {
-            resultLong -= Units.Angle.TURN;
+        if (resultLong >= 0.5d) {
+            resultLong -= 1;
         }
 
+        double resultLatDegree = Units.convert(resultLat, Units.Angle.TURN, Units.Angle.DEGREE);
+        if (resultLatDegree > 90d || resultLatDegree < -90d) return null;
         int latT32 = (int) Math.rint(Units.convert(resultLat, Units.Angle.TURN, Units.Angle.T32));
         int longT32 = (int) Math.rint(Units.convert(resultLong, Units.Angle.TURN, Units.Angle.T32));
-        // verifier que les nv x1/x0/y1/y0 sont compris entre 0 et 1 ? #661 ?
+
         return new GeoPos(longT32, latT32);
     }
 }
