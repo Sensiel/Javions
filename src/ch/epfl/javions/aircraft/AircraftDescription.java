@@ -9,7 +9,7 @@ public record AircraftDescription(String string) {
 
     /**
      * Compact Constructor
-     * @param string
+     * @param string : the string associated to the description of the aircraft
      * @throws IllegalArgumentException if the given string isn't valid
      */
     public AircraftDescription{

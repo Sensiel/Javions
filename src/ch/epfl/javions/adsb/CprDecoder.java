@@ -46,7 +46,7 @@ public class CprDecoder {
 
         double A = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(resultLat, Units.Angle.TURN) ), 2d)));
         double resultLong;
-        if (Double.isNaN(A)) {// normalement je dois utiliser isNaN()
+        if (Double.isNaN(A)) {
             resultLong = (mostRecent == 0) ? x0 : x1;
         }
         else {
