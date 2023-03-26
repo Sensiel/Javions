@@ -17,7 +17,7 @@ public record AirborneVelocityMessage(long timeStampNs,
         Preconditions.checkArgument(trackOrHeading >= 0);
         Preconditions.checkArgument(timeStampNs >= 0);
     }
-    static AirborneVelocityMessage of(RawMessage rawMessage){
+    public static AirborneVelocityMessage of(RawMessage rawMessage){
         if(rawMessage.typeCode() != 19) return null;
         long timeStampNs = rawMessage.timeStampNs();
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
@@ -30,8 +30,14 @@ public record AirborneVelocityMessage(long timeStampNs,
             int vns = Bits.extractUInt(neededBits,0,10);
             if(vns == 0 || vew == 0) return null;
             double speed = Units.convertFrom(Math.hypot(vns - 1,vew - 1) * Math.pow(ST,2),Units.Speed.KNOT); // si ST = 2 : 4noeuds sinon 1 noeud
-            // calcul angle selon atan2 quels sont les conditions ?
-            return new AirborneVelocityMessage(timeStampNs,icaoAddress,speed,0);
+            double angle;
+            if(Bits.testBit(neededBits,10)){
+                 angle = Bits.testBit(neededBits,21)? Math.atan2(1-vew,1-vns) : Math.atan2(vew-1,1-vns);
+            } else {
+                 angle = Bits.testBit(neededBits,21)?Math.atan2(1-vew,vns-1): Math.atan2(vew-1,vns-1);
+            }
+            if(angle < 0) angle += 2 * Math.PI;
+            return new AirborneVelocityMessage(timeStampNs,icaoAddress,speed,angle);
 
         } else if ((ST == 3 || ST == 4) && Bits.testBit(neededBits,21)) {
             int HDG = Bits.extractUInt(neededBits,11,10) & 0xff;
