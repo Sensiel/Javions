@@ -9,7 +9,7 @@ public final class Crc24 {
 
     /**
      * Constructor that builds the array associated to the generator
-     * @param generator
+     * @param generator : the given generator
      */
     public Crc24(int generator){
         table = buildTable(generator);
@@ -36,7 +36,7 @@ public final class Crc24 {
 
     /**
      * Calculate the CRC24 bit by bit
-     * @param generator
+     * @param generator : the given generator
      * @param bytes : the message
      * @return the CRC24 associated to the generator and message given
      */

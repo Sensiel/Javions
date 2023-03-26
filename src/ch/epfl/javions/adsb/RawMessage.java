@@ -75,7 +75,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     /**
-     * @return the payload of the message
+     * @return the payload of the message (56 bits)
      */
     public long payload(){
         return bytes().bytesInRange(4,11);
