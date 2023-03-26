@@ -2,7 +2,7 @@ package ch.epfl.javions.adsb;
 
 public class MessageParser {
     private MessageParser(){}
-    Message parse(RawMessage rawMessage){
+    public static Message parse(RawMessage rawMessage){
         if((rawMessage.typeCode() >= 9 && rawMessage.typeCode() <= 18) ||(rawMessage.typeCode() >= 20 && rawMessage.typeCode() <= 22)){
             return AirbornePositionMessage.of(rawMessage); //jsp laquelle est meilleure entre les deux
         }
