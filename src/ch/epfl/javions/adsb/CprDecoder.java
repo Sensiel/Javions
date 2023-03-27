@@ -42,7 +42,7 @@ public class CprDecoder {
         // Faut changer de TURN à Radian je pense
         double aImp = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(latImp, Units.Angle.TURN)), 2d)));
         double aPair = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(latPair, Units.Angle.TURN)), 2d)));
-        if(Math.floor(2d * Math.PI / aPair) != Math.floor(2d * Math.PI / aImp)) return null;
+        if(Double.compare(Math.floor(2d * Math.PI / aPair),Math.floor(2d * Math.PI / aImp)) != 0) return null;
 
         double A = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(resultLat, Units.Angle.TURN) ), 2d)));
         double resultLong;
