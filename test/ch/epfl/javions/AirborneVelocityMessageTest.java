@@ -13,6 +13,7 @@ import java.io.InputStream;
 public class AirborneVelocityMessageTest {
     @Test
     void returnTrivialValue() throws IOException {
+        /*
         String f = "resources/samples_20230304_1442 3.bin";
         try (InputStream s = new FileInputStream(f)) {
             AdsbDemodulator d = new AdsbDemodulator(s);
@@ -20,5 +21,9 @@ public class AirborneVelocityMessageTest {
             while ((m = d.nextMessage()) != null)
                 System.out.println(AirborneVelocityMessage.of(m));
         }
+
+         */
+        RawMessage msgA =new RawMessage (0, ByteString.ofHexadecimalString("8DA05F219B06B6AF189400CBC33F"));
+        System.out.println(AirborneVelocityMessage.of(msgA));
     }
 }

@@ -23,7 +23,7 @@ public record AirborneVelocityMessage(long timeStampNs,
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
         long ME = rawMessage.payload();
         int ST = Bits.extractUInt(ME,48,3) & 0xff;
-        long neededBits = Bits.extractUInt(ME,21,22); // j'ai le droit de mettre long, sachant que ca retourne int ?
+        long neededBits = Bits.extractUInt(ME,21,22);
 
         if(ST == 1 || ST == 2){
             int vew = Bits.extractUInt(neededBits,11,10);
@@ -40,9 +40,11 @@ public record AirborneVelocityMessage(long timeStampNs,
             return new AirborneVelocityMessage(timeStampNs,icaoAddress,speed,angle);
 
         } else if ((ST == 3 || ST == 4) && Bits.testBit(neededBits,21)) {
-            int HDG = Bits.extractUInt(neededBits,11,10) & 0xff;
+            int HDG = Bits.extractUInt(neededBits,11,10);
             double cap = Units.convertFrom(Math.scalb(HDG,-10),Units.Angle.TURN);
-            double AS = Units.convertFrom((Bits.extractUInt(neededBits,0,10) & 0xff ) * Math.pow(ST-2,2),Units.Speed.KNOT);
+            double ASKnots = ((Bits.extractUInt(neededBits,0,10) ) * Math.pow(ST-2,2)) - 1;
+            double AS = Units.convertFrom(ASKnots,Units.Speed.KNOT);
+            if(AS == 0) return null;
             return new AirborneVelocityMessage(timeStampNs,icaoAddress,AS,cap);
 
         } else {return null;}
