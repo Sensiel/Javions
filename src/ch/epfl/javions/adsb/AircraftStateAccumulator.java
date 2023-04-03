@@ -1,5 +1,8 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.GeoPos;
+
+import java.util.Arrays;
 import java.util.Objects;
 
 public class AircraftStateAccumulator<T extends AircraftStateSetter>{
@@ -21,10 +24,13 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter>{
             case AirborneVelocityMessage avm -> {state.setVelocity(avm.speed()); state.setTrackOrHeading(avm.trackOrHeading());}
             case AirbornePositionMessage apm -> {
                 messages[apm.parity()] = apm;
-                if(messages[(apm.parity() + 1) % 2] != null && apm.timeStampNs() - messages[(apm.parity() + 1) % 2].timeStampNs() <= 1e10){
-                    state.setPosition(CprDecoder.decodePosition(messages[0].x(), messages[0].y(),messages[1].x(), messages[1].y(), apm.parity()));
-                }
                 state.setAltitude(apm.altitude());
+                if(messages[(apm.parity() + 1) % 2] != null && apm.timeStampNs() - messages[(apm.parity() + 1) % 2].timeStampNs() <= 1e10){
+                    GeoPos pos = CprDecoder.decodePosition(messages[0].x(), messages[0].y(),messages[1].x(), messages[1].y(), apm.parity());
+                    if(pos != null)
+                        state.setPosition(pos);
+                }
+
             }
             default -> throw new Error();
         }

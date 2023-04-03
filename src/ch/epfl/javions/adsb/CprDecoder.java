@@ -32,18 +32,13 @@ public class CprDecoder {
         double resultLat;
         resultLat = (mostRecent == 0) ? latPair : latImp;
 
-        //creer methode prv pour check validité de lat
-
-
         // fin latitude
 
         // debut longitude
 
-        // Faut changer de TURN à Radian je pense
         double aImp = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(latImp, Units.Angle.TURN)), 2d)));
         double aPair = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(latPair, Units.Angle.TURN)), 2d)));
-        if(Double.compare(Math.floor(2d * Math.PI / aPair),Math.floor(2d * Math.PI / aImp)) != 0) return null;
-
+        if(Math.abs(Math.floor(2d * Math.PI / aPair) - Math.floor(2d * Math.PI / aImp)) > 1e-5) return null;
         double A = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(resultLat, Units.Angle.TURN) ), 2d)));
         double resultLong;
         if (Double.isNaN(A)) {
@@ -59,7 +54,7 @@ public class CprDecoder {
             else
                 resultLong = (mostRecent == 0) ? (1d / zLong0) * (zoneLong + x0) : (1d / zLong1) * (zoneLong + x1);
         }
-        // creer methode prv pour recentrer
+
         if (resultLat >= 0.5d) {
             resultLat -= 1;
         }
