@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class AircraftStateAccumulator<T extends AircraftStateSetter>{
     private final T state;
-    private AirbornePositionMessage[] messages;
+    private AirbornePositionMessage[] messages = new AirbornePositionMessage[2];
     public AircraftStateAccumulator(T stateSetter){
         Objects.requireNonNull(stateSetter);
         this.state = stateSetter;
@@ -26,7 +26,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter>{
                 }
                 state.setAltitude(apm.altitude());
             }
-            default -> System.out.println("Autre type de message.");
+            default -> throw new Error();
         }
     }
 
