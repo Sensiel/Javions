@@ -11,12 +11,27 @@ public record AirborneVelocityMessage(long timeStampNs,
                                       IcaoAddress icaoAddress,
                                       double speed,
                                       double trackOrHeading) implements Message {
+    /**
+     * Compact Constructor
+     * @param timeStampNs : the time stamp of the message in nanoseconds
+     * @param icaoAddress : the ICAO address of the sender of the message
+     * @param speed : the speed of the aircraft in m/s
+     * @param trackOrHeading : the direction of the aircraft in radians
+     * @throws IllegalArgumentException if timeStampNs, speed or trackOrHeading are strictly negative
+     * @throws NullPointerException if icaoAddress is null
+     */
     public AirborneVelocityMessage{
         Objects.requireNonNull(icaoAddress);
         Preconditions.checkArgument(speed >= 0);
         Preconditions.checkArgument(trackOrHeading >= 0);
         Preconditions.checkArgument(timeStampNs >= 0);
     }
+
+    /**
+     * Evaluate all the needed attributes starting from the given raw message
+     * @param rawMessage : the given message
+     * @return the AirborneVelocityMessage corresponding to the given raw message
+     */
     public static AirborneVelocityMessage of(RawMessage rawMessage){
         if(rawMessage.typeCode() != 19) return null;
         long timeStampNs = rawMessage.timeStampNs();
@@ -33,7 +48,7 @@ public record AirborneVelocityMessage(long timeStampNs,
 
             double speed = Units.convertFrom(Math.hypot(vns - 1,vew - 1) * Math.pow(ST, 2), Units.Speed.KNOT); // si ST = 2 : 4noeuds sinon 1 noeud
             double angle;
-
+            //
             if(Bits.testBit(neededBits,10)) {
                  angle = Bits.testBit(neededBits,21) ? Math.atan2(1 - vew, 1 - vns) : Math.atan2(vew - 1, 1 - vns);
             }
@@ -41,7 +56,7 @@ public record AirborneVelocityMessage(long timeStampNs,
                  angle = Bits.testBit(neededBits,21) ? Math.atan2(1 - vew, vns - 1) : Math.atan2(vew - 1, vns - 1);
             }
             if(angle < 0) angle += 2d * Math.PI;
-
+            //
             return new AirborneVelocityMessage(timeStampNs, icaoAddress, speed, angle);
 
         }

@@ -9,7 +9,7 @@ public interface Message {
      long timeStampNs();
 
      /**
-      * @return the ICAO address of the sender of the message
+      * @return the ICAO address associated to the message
       */
      IcaoAddress icaoAddress();
 }

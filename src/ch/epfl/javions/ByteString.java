@@ -16,9 +16,9 @@ public final class ByteString {
     }
 
     /**
-     * Convert Hexadecimal into an array of bytes then a byteString
+     * Convert a Hexadecimal String into an array of bytes then a byteString
      * @param hexString : String in Hexadecimal representation
-     * @return returns the byteString corresponding to the hexadecimal representation of the argument
+     * @return the byteString associated to hexString
      */
     public static ByteString ofHexadecimalString(String hexString){
         Preconditions.checkArgument(hexString.length()%2 == 0);
@@ -35,7 +35,7 @@ public final class ByteString {
 
     /**
      * Extract a byte at the given index
-     * @param index
+     * @param index : the chosen index
      * @return the integer representing the byte at the given index
      */
     public int byteAt(int index){
@@ -45,9 +45,9 @@ public final class ByteString {
 
     /**
      * Extract the bytes between the two indexes given
-     * @param fromIndex
-     * @param toIndex
-     * @return returns the bytes between the indexes fromIndex and toIndex as a long
+     * @param fromIndex : the index from where we'll start extracting
+     * @param toIndex : the index where we'll end extracting
+     * @return a long corresponding to the bytes between the indexes fromIndex and toIndex
      */
     public long bytesInRange(int fromIndex, int toIndex){
         long result = 0;

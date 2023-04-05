@@ -8,7 +8,7 @@ public record AircraftTypeDesignator(String string) {
     private static final Pattern DesignatorRegex = Pattern.compile("[A-Z0-9]{2,4}");
     /**
      * Compact Constructor
-     * @param string
+     * @param string : the string associated to the TypeDesignator of the aircraft
      * @throws IllegalArgumentException if the given string isn't valid
      */
     public AircraftTypeDesignator{

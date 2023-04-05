@@ -8,7 +8,7 @@ public record CallSign(String string) {
     private static final Pattern CallSignRegex = Pattern.compile("[A-Z0-9 ]{0,8}");
     /**
      * Compact Constructor
-     * @param string : the call sign 
+     * @param string : the string associated to the call sign
      * @throws IllegalArgumentException if the given string isn't valid
      */
     public CallSign{

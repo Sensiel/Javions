@@ -3,8 +3,8 @@ package ch.epfl.javions;
 public class WebMercator {
     /**
      * Project the longitude
-     * @param zoomLevel
-     * @param longitude
+     * @param zoomLevel : the level of the zoom
+     * @param longitude : the given longitude
      * @return the coordinate x corresponding to the longitude and zoomLevel given
      */
     public static double x(int zoomLevel, double longitude){
@@ -13,8 +13,8 @@ public class WebMercator {
 
     /**
      * Project the latitude
-     * @param zoomLevel
-     * @param latitude
+     * @param zoomLevel : the level of the zoom
+     * @param latitude : the given latitude
      * @return the coordinate y corresponding to the longitude and zoomLevel given
      */
     public static double y(int zoomLevel, double latitude){

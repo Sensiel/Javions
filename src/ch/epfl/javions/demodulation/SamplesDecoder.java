@@ -7,11 +7,8 @@ import java.io.InputStream;
 import java.util.Objects;
 
 public final class SamplesDecoder {
-
     private byte[] batch;
-
     private InputStream stream;
-
     private int batchSize;
 
     /**

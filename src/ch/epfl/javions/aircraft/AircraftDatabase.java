@@ -8,17 +8,15 @@ import java.util.zip.ZipFile;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public final class AircraftDatabase {
-    String fileName;
+    private String fileName;
     private static final int REGISTRATION_INDEX = 1;
     private static final int DESIGNATOR_INDEX = 2;
     private static final int MODEL_INDEX = 3;
     private static final int DESCRIPTION_INDEX = 4;
     private static final int WTC_INDEX = 5;
 
-
     /**
-     * Constructor
-     *
+     * Public Constructor
      * @param fileName : the name associated to the Zip File
      */
     public AircraftDatabase(String fileName) {
@@ -27,12 +25,10 @@ public final class AircraftDatabase {
 
     /**
      * Find the complementary information about an aircraft through its given IcaoAddress
-     *
-     * @param address : IcaoAddress of an aircraft
-     * @return the aircraftData associated to given IcaoAddress
+     * @param address : IcaoAddress of a random aircraft
+     * @return the aircraftData associated to the given IcaoAddress
      */
     public AircraftData get(IcaoAddress address) throws IOException {
-        //System.out.println(csvFileName + " " + address.string());
         String csvFileName = address.string().substring(4, 6) + ".csv";
         try (ZipFile zipFile = new ZipFile(fileName);
              InputStream fileInZip = zipFile.getInputStream(zipFile.getEntry(csvFileName));
@@ -50,7 +46,7 @@ public final class AircraftDatabase {
             }
 
             String[] aircraftData = currLine.split(",", -1);
-            AircraftRegistration registration = new AircraftRegistration(aircraftData[REGISTRATION_INDEX]);//meilleure encapsulation pour ce bloc ?
+            AircraftRegistration registration = new AircraftRegistration(aircraftData[REGISTRATION_INDEX]);
             AircraftDescription description = new AircraftDescription(aircraftData[DESCRIPTION_INDEX]);
             AircraftTypeDesignator designator = new AircraftTypeDesignator(aircraftData[DESIGNATOR_INDEX]);
             WakeTurbulenceCategory wakeTurbulenceCategory = WakeTurbulenceCategory.of(aircraftData[WTC_INDEX]);

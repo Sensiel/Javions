@@ -9,7 +9,7 @@ public record IcaoAddress(String string) {
 
     /**
      * Compact Constructor
-     * @param string
+     * @param string : the string associated to the ICAO address
      * @throws IllegalArgumentException if the given string isn't valid
      */
     public IcaoAddress{

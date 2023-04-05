@@ -18,7 +18,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @param timeStampNs : the time stamp of the message, expressed in nanoseconds from a given origin
      * @param bytes : the bytes of the message
      * @throws NullPointerException if the given array of bytes is null
-     * @throws IllegalArgumentException if the time stamp is negatif or if the array does not contain 14 bytes
+     * @throws IllegalArgumentException if the time stamp is negative or if the array does not contain 14 bytes
      */
     public RawMessage{
         Objects.requireNonNull(bytes);

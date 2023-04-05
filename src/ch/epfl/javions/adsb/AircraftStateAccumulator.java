@@ -8,15 +8,28 @@ import java.util.Objects;
 public class AircraftStateAccumulator<T extends AircraftStateSetter>{
     private final T state;
     private AirbornePositionMessage[] messages = new AirbornePositionMessage[2];
+
+    /**
+     * Public Construtor
+     * @param stateSetter : the state of the aircraft
+     * @throws NullPointerException if stateSetter is null
+     */
     public AircraftStateAccumulator(T stateSetter){
         Objects.requireNonNull(stateSetter);
         this.state = stateSetter;
     }
 
+    /**
+     * @return the state of the aircraft
+     */
     public T stateSetter(){
         return state;
     }
 
+    /**
+     * Update the state of the aircraft according to the given message
+     * @param message : the given message
+     */
     public void update(Message message){
         state.setLastMessageTimeStampNs(message.timeStampNs());
         switch (message) {
@@ -30,10 +43,8 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter>{
                     if(pos != null)
                         state.setPosition(pos);
                 }
-
             }
             default -> throw new Error();
         }
     }
-
 }

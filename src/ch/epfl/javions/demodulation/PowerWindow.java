@@ -49,7 +49,6 @@ public final class PowerWindow {
      * @return true if the window is full
      */
     public boolean isFull(){
-        //System.out.println(position() + " " + size() + " " + nSampleRead);
         return ((position() + size()) % BATCH_SIZE <= nSampleRead);
     }
 

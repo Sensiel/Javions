@@ -10,7 +10,7 @@ public class CprDecoder {
     private static final double LARGEUR_0 = 1d / ZLAT0;
     private static final double LARGEUR_1 = 1d / ZLAT1;
 
-    private CprDecoder() {} //pour le rendre non instanciable
+    private CprDecoder() {}
 
     /**
      * Evaluate the geographical positions from the given positions
@@ -54,6 +54,7 @@ public class CprDecoder {
             else
                 resultLong = (mostRecent == 0) ? (1d / zLong0) * (zoneLong + x0) : (1d / zLong1) * (zoneLong + x1);
         }
+        //fin long
 
         if (resultLat >= 0.5d) {
             resultLat -= 1;
@@ -64,6 +65,7 @@ public class CprDecoder {
 
         double resultLatDegree = Units.convert(resultLat, Units.Angle.TURN, Units.Angle.DEGREE);
         if (resultLatDegree > 90d || resultLatDegree < -90d) return null;
+
         int latT32 = (int) Math.rint(Units.convert(resultLat, Units.Angle.TURN, Units.Angle.T32));
         int longT32 = (int) Math.rint(Units.convert(resultLong, Units.Angle.TURN, Units.Angle.T32));
 

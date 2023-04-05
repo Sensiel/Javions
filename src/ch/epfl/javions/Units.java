@@ -34,7 +34,7 @@ public final class Units {
 
     /**
      * Convert units
-     * @param value
+     * @param value : the value that'll be converted
      * @param fromUnit : the unit of value
      * @param toUnit : the unit we want to convert to
      * @return value converted in toUnit
@@ -45,7 +45,7 @@ public final class Units {
 
     /**
      * Convert to the basic unit
-     * @param value
+     * @param value : the value that'll be converted
      * @param fromUnit : the unit of value
      * @return value converted in the basic unit
      */
@@ -55,7 +55,7 @@ public final class Units {
 
     /**
      * Convert from the basic unit to the given unit
-     * @param value
+     * @param value : the value that'll be converted
      * @param toUnit : the unit we want to convert to
      * @return value converted in toUnit
      */

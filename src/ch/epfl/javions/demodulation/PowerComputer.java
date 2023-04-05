@@ -6,11 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public final class PowerComputer {
-
     private short[] sampleBatch;
     private SamplesDecoder samplesDecoder;
     private int batchSize;
-
     private short[] currSample;
 
     /**

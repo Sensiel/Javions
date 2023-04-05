@@ -9,7 +9,7 @@ public class Bits {
     /**
      * Extract from value the size bit range starting at the start index bit
      * @param value : the 64 bits from where we will extract the wanted bits
-     * @param start : the index representing the start of the bit
+     * @param start : the index from where we'll start the extraction
      * @param size : the size of the bits we want to extract
      * @return an unsigned value corresponding to the extracted bits
      */
@@ -20,7 +20,7 @@ public class Bits {
     }
 
     /**
-     * Check if the bit at given index is equal to 1
+     * Check if the bit at the given index is equal to 1
      * @param value : the 64 bits from where we will extract the bit
      * @param index : the index of the wanted bit
      * @return true if the value of the bit at the given index is equal to 1

@@ -12,10 +12,10 @@ public record AircraftIdentificationMessage (long timeStampNs,
                                              CallSign callSign) implements Message{
     /**
      * Compact Constructor
-     * @param timeStampNs : the time stamp of the message, expressed in nanoseconds from a given origin
-     * @param icaoAddress : the ICAO address of the sender of the message
-     * @param category : the aircraft category
-     * @param callSign : the callSign
+     * @param timeStampNs : the time stamp of the message, expressed in nanoseconds
+     * @param icaoAddress : the ICAO address of the message
+     * @param category : the aircraft category of the message
+     * @param callSign : the callSign of the message
      */
     public AircraftIdentificationMessage{
         Objects.requireNonNull(icaoAddress);

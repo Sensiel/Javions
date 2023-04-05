@@ -1,14 +1,12 @@
 package ch.epfl.javions;
 
-import java.util.HexFormat;
-
 public final class Crc24 {
     public final static int GENERATOR = 0xFFF409;
     public int[] table;
-    public static final int GeneratorLength = 24;
+    public static final int GENERATOR_LENGTH = 24;
 
     /**
-     * Constructor that builds the array associated to the generator
+     * Public Constructor that builds the array associated to the generator
      * @param generator : the given generator
      */
     public Crc24(int generator){
@@ -23,16 +21,14 @@ public final class Crc24 {
     public int crc(byte[] bytes){
         int crc = 0;
         for (byte aByte : bytes) {
-            crc = ((crc << Byte.SIZE) | Byte.toUnsignedInt(aByte)) ^ table[Bits.extractUInt(crc, GeneratorLength - Byte.SIZE, Byte.SIZE)];
+            crc = ((crc << Byte.SIZE) | Byte.toUnsignedInt(aByte)) ^ table[Bits.extractUInt(crc, GENERATOR_LENGTH - Byte.SIZE, Byte.SIZE)];
         }
-        for(int i = 0; i < 3 ; i++){ //augmentation message
-            crc = ((crc << Byte.SIZE) ^ table[Bits.extractUInt(crc, GeneratorLength - Byte.SIZE, Byte.SIZE)]);
+        for(int i = 0; i < 3 ; i++){
+            crc = ((crc << Byte.SIZE) ^ table[Bits.extractUInt(crc, GENERATOR_LENGTH - Byte.SIZE, Byte.SIZE)]);
         }
-        crc = Bits.extractUInt(crc,0,GeneratorLength);
+        crc = Bits.extractUInt(crc,0, GENERATOR_LENGTH);
         return crc;
     }
-
-
 
     /**
      * Calculate the CRC24 bit by bit
@@ -46,21 +42,21 @@ public final class Crc24 {
         for (byte b : bytes) {
             for (int j = 7; j >= 0; j--) {
                 int currMessageBit = Bits.extractUInt(Byte.toUnsignedLong(b), j, 1);
-                int currCRCBit = Bits.extractUInt(crc, GeneratorLength - 1, 1);
+                int currCRCBit = Bits.extractUInt(crc, GENERATOR_LENGTH - 1, 1);
                 crc = ((crc << 1 | currMessageBit) ^ table[currCRCBit]);
             }
         }
-        for(int i = 0; i < 24; i++) { //augmentation message
-            int currCRCBit = Bits.extractUInt(crc, GeneratorLength - 1, 1);
+        for(int i = 0; i < 24; i++) {
+            int currCRCBit = Bits.extractUInt(crc, GENERATOR_LENGTH - 1, 1);
             crc = ((crc << 1) ^ table[currCRCBit]);
         }
-        crc = Bits.extractUInt(crc,0,GeneratorLength);
+        crc = Bits.extractUInt(crc,0, GENERATOR_LENGTH);
         return crc;
     }
 
     /**
-     * Build the table of 256 entries corresponding to a generator
-     * @param generator
+     * Build the table of 256 entries corresponding to the new generator
+     * @param generator : the given generator
      * @return the array associated to the given generator
      */
     static int[] buildTable(int generator){

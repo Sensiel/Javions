@@ -39,7 +39,7 @@ public final class AdsbDemodulator {
             nextSommeP = window.get(1) + window.get(11) + window.get(36) + window.get(46);
 
             boolean conditionSatisfied = sommeP > lastSommeP && sommeP > nextSommeP && sommeP >= 2 * sommeV;
-            lastSommeP = sommeP; // pour 1er faire somme = 0 #329
+            lastSommeP = sommeP;
 
             if (conditionSatisfied) {
                 byte result = 0;
