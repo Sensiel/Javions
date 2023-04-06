@@ -43,14 +43,14 @@ public final class AdsbDemodulator {
             if (conditionSatisfied) {
                 byte result = 0;
                 byte[] bytes = new byte[14];
-                for (int i = 0; i < 112; i++) {
-                    byte currBit = (byte) ((window.get(80 + 10 * i) < window.get(85 + 10 * i)) ? 0 : 1);
+                for (int iBit = 0; iBit < 112; iBit++) {
+                    byte currBit = (byte) ((window.get(80 + 10 * iBit) < window.get(85 + 10 * iBit)) ? 0 : 1);
                     result = (byte)((result << 1) | currBit);
 
-                    if(i % 8 == 7){
-                        bytes[(i-7)/8] = result;
+                    if(iBit % 8 == 7){
+                        bytes[(iBit-7)/8] = result;
 
-                        if (i == 7 && (RawMessage.size(result)) != RawMessage.LENGTH){
+                        if (iBit == 7 && (RawMessage.size(result)) != RawMessage.LENGTH){
                             window.advance();
                             isWindowValid = false;
                             break;

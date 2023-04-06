@@ -48,6 +48,7 @@ public final class AircraftDatabase {
             AircraftDescription description = new AircraftDescription(aircraftData[DESCRIPTION_INDEX]);
             AircraftTypeDesignator designator = new AircraftTypeDesignator(aircraftData[DESIGNATOR_INDEX]);
             WakeTurbulenceCategory wakeTurbulenceCategory = WakeTurbulenceCategory.of(aircraftData[WTC_INDEX]);
+
             String model = aircraftData[MODEL_INDEX];
             return new AircraftData(registration, designator, model, description, wakeTurbulenceCategory);
         }

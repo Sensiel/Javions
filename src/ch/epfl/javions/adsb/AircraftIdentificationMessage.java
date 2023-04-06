@@ -32,8 +32,8 @@ public record AircraftIdentificationMessage (long timeStampNs,
         if(rawMessage.typeCode() < 1 || rawMessage.typeCode() > 4)
             return null;
 
-        for(int i = 7; i >= 0 ; i--){
-            int c = Bits.extractUInt(rawMessage.payload(),i*6,6);
+        for(int iChar = 7; iChar >= 0 ; iChar--){
+            int c = Bits.extractUInt(rawMessage.payload(),iChar*6,6);
             if((c >= '0' && c <= '9') || c == ' ')
                 string += (char) c;
             else if(c >= 1 && c <= 26)

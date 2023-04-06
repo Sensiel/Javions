@@ -48,6 +48,7 @@ public record AirbornePositionMessage(long timeStampNs,
         }
         else {
             long altitude = 0L;
+            //We decided to do the shuffle using an index list because it was the best way to optimize tu readability and the complexity of the code
             final int[] INDEX_SHUFFLE = {9,3,10,4,11,5,6,0,7,1,8,2};
             for(int iBit = 0; iBit < 12; iBit++){
                 long currBit = Bits.testBit(ALT, iBit) ? 1L : 0L;
