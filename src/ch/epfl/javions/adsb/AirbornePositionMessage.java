@@ -44,28 +44,30 @@ public record AirbornePositionMessage(long timeStampNs,
         if(Bits.testBit(ALT,4)){
             int part1 = Bits.extractUInt(ALT,5,7);
             int part2 = Bits.extractUInt(ALT,0,4);
-            altitudeFinale = (part1 << 4 | part2)*25d - 1000;
+            altitudeFinale = (part1 << 4 | part2) * 25d - 1000;
         }
         else {
             long altitude = 0L;
-            int[] index = {9,3,10,4,11,5,6,0,7,1,8,2};
+            final int[] INDEX_SHUFFLE = {9,3,10,4,11,5,6,0,7,1,8,2};
             for(int iBit = 0; iBit < 12; iBit++){
                 long currBit = Bits.testBit(ALT, iBit) ? 1L : 0L;
-                altitude = altitude | (currBit << index[iBit]);
+                altitude = altitude | (currBit << INDEX_SHUFFLE[iBit]);
             }
 
-            int lowPart = Bits.extractUInt(altitude,0,3);
-            int upPart = Bits.extractUInt(altitude,3,9);
-            lowPart = (lowPart)^(lowPart >> 1)^(lowPart >> 2);
+            int lowerPart = Bits.extractUInt(altitude,0,3);
+            int upperPart = Bits.extractUInt(altitude,3,9);
+            lowerPart = (lowerPart)^(lowerPart >> 1)^(lowerPart >> 2);
             int upGray = 0;
             for(int i = 0 ; i < 9; i++)
-                upGray ^= upPart >> i;
+                upGray ^= upperPart >> i;
 
-            if (lowPart == 0 || lowPart == 5 || lowPart == 6) return null;
-            if (lowPart == 7) lowPart = 5;
-            if(upGray % 2 == 1) lowPart = 6 - lowPart;
+            if (lowerPart == 0 || lowerPart == 5 || lowerPart == 6)
+                return null;
+            if (lowerPart == 7) lowerPart = 5;
 
-            altitudeFinale = -1300 + (lowPart * 100) + (upGray * 500);
+            if(upGray % 2 == 1) lowerPart = 6 - lowerPart;
+
+            altitudeFinale = -1300d + (lowerPart * 100d) + (upGray * 500d);
         }
         altitudeFinale = Units.convertFrom(altitudeFinale,Units.Length.FOOT);
         double lonLocal = Math.scalb(Bits.extractUInt(ME,0,17),-17);
@@ -73,6 +75,7 @@ public record AirbornePositionMessage(long timeStampNs,
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
         int parity = Bits.extractUInt(ME,34,1);
         long timeStampsNs = rawMessage.timeStampNs();
+
         return new AirbornePositionMessage(timeStampsNs,icaoAddress,altitudeFinale,parity,lonLocal,latLocal);
     }
 

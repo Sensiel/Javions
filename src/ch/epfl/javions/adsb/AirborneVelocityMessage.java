@@ -46,38 +46,34 @@ public record AirborneVelocityMessage(long timeStampNs,
             int vns = Bits.extractUInt(neededBits,0,10);
             if(vns == 0 || vew == 0) return null;
 
-            double speed = Units.convertFrom(Math.hypot(vns - 1,vew - 1) * Math.pow(ST, 2), Units.Speed.KNOT); // si ST = 2 : 4noeuds sinon 1 noeud
+            double speed = Units.convertFrom(Math.hypot(vns - 1,vew - 1) * Math.pow(ST, 2), Units.Speed.KNOT);
             double angle;
             //
-            if(Bits.testBit(neededBits,10)) {
+            if(Bits.testBit(neededBits,10))
                  angle = Bits.testBit(neededBits,21) ? Math.atan2(1 - vew, 1 - vns) : Math.atan2(vew - 1, 1 - vns);
-            }
-            else {
+            else
                  angle = Bits.testBit(neededBits,21) ? Math.atan2(1 - vew, vns - 1) : Math.atan2(vew - 1, vns - 1);
-            }
-            if(angle < 0) angle += 2d * Math.PI;
-            //
+
+            if(angle < 0)
+                angle += 2d * Math.PI;
+
             return new AirborneVelocityMessage(timeStampNs, icaoAddress, speed, angle);
 
         }
         else if ((ST == 3 || ST == 4) && Bits.testBit(neededBits,21)) {
-
             int HDG = Bits.extractUInt(neededBits, 11, 10);
-
             double cap = Units.convertFrom(Math.scalb(HDG, -10), Units.Angle.TURN);
-
             double ASKnots = ((Bits.extractUInt(neededBits, 0, 10)));
 
-            if(ASKnots == 0) return null;
+            if(ASKnots == 0)
+                return null;
             ASKnots--;
             if(ST == 4) ASKnots *= 4;
 
             double AS = Units.convertFrom(ASKnots, Units.Speed.KNOT);
-
             return new AirborneVelocityMessage(timeStampNs, icaoAddress, AS, cap);
         }
-        else {
+        else
             return null;
-        }
     }
 }

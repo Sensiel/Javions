@@ -59,12 +59,10 @@ public final class PowerWindow {
     public int get(int i){
         Objects.checkIndex(i, size());
         int newIndex = (int) position() % BATCH_SIZE + i;
-        if(newIndex >= BATCH_SIZE) {
+        if(newIndex >= BATCH_SIZE)
             return batch2[newIndex % BATCH_SIZE];
-        }
-        else {
+        else
             return batch1[newIndex];
-        }
     }
 
     /**
@@ -73,12 +71,11 @@ public final class PowerWindow {
      */
     public void advance() throws IOException{
         WindowPos += 1;
-        if((position() % BATCH_SIZE) + size() == BATCH_SIZE ){ //The window overlaps the second batch
+        if((position() % BATCH_SIZE) + size() == BATCH_SIZE ) //The window overlaps the second batch
             nSampleRead = powerComputer.readBatch(batch2);
-        }
-        if(position() % BATCH_SIZE == 0 && position()  >= BATCH_SIZE){ //The window is totally contained in the second batch
+
+        if(position() % BATCH_SIZE == 0 && position()  >= BATCH_SIZE) //The window is totally contained in the second batch
             batch1 = batch2.clone();
-        }
     }
 
     /**

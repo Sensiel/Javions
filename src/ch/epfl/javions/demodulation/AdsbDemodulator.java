@@ -30,7 +30,6 @@ public final class AdsbDemodulator {
         double lastSommeP = 0;
         double nextSommeP = window.get(0) + window.get(10) + window.get(35) + window.get(45);
 
-        parkour: // Absolument changer ça c'est immonde
         while (window.isFull()) {
             double sommeP = nextSommeP;
             double sommeV = window.get(5) + window.get(15) + window.get(20) + window.get(25)
@@ -40,7 +39,7 @@ public final class AdsbDemodulator {
 
             boolean conditionSatisfied = sommeP > lastSommeP && sommeP > nextSommeP && sommeP >= 2 * sommeV;
             lastSommeP = sommeP;
-
+            boolean isWindowValid = true;
             if (conditionSatisfied) {
                 byte result = 0;
                 byte[] bytes = new byte[14];
@@ -53,22 +52,25 @@ public final class AdsbDemodulator {
 
                         if (i == 7 && (RawMessage.size(result)) != RawMessage.LENGTH){
                             window.advance();
-                            continue parkour;
+                            isWindowValid = false;
+                            break;
                         }
                         result = 0;
                     }
                 }
-
-                long timeStamp = window.position() * DURATION_2_SAMPLES;
-                RawMessage potentialResult = RawMessage.of(timeStamp,bytes);
-                if(potentialResult == null)
-                    window.advance();
-                else{
-                    window.advanceBy(1200);
-                    return potentialResult;
+                if(isWindowValid){
+                    long timeStamp = window.position() * DURATION_2_SAMPLES;
+                    RawMessage potentialResult = RawMessage.of(timeStamp,bytes);
+                    if(potentialResult == null)
+                        window.advance();
+                    else {
+                        window.advanceBy(1200);
+                        return potentialResult;
+                    }
                 }
             }
-            else window.advance();
+            else
+                window.advance();
         }
         return null;
     }

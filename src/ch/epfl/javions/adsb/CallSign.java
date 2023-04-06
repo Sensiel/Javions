@@ -15,6 +15,10 @@ public record CallSign(String string) {
         Preconditions.checkArgument(isValidCallSign(string));
     }
 
+    /**
+     * @param string : the given CallSign
+     * @return isValid : a boolean indicating if the given CallSign is valid
+     */
     private static boolean isValidCallSign(String string){
         return CallSignRegex.matcher(string).matches() || string.isEmpty();
     }

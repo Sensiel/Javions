@@ -23,7 +23,6 @@ public class CprDecoder {
      */
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
-        //latitude
 
         double zoneLat = Math.rint((y0 * ZLAT1) - (y1 * ZLAT0));
         double latPair = (zoneLat < 0d) ? LARGEUR_0 * ((zoneLat + ZLAT0) + y0) : LARGEUR_0 * (zoneLat + y0);
@@ -32,18 +31,20 @@ public class CprDecoder {
         double resultLat;
         resultLat = (mostRecent == 0) ? latPair : latImp;
 
-        // fin latitude
+        double aImp = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0))
+                / Math.pow(Math.cos(Units.convertFrom(latImp, Units.Angle.TURN)), 2d)));
+        double aPair = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0))
+                / Math.pow(Math.cos(Units.convertFrom(latPair, Units.Angle.TURN)), 2d)));
 
-        // debut longitude
+        if(Math.abs(Math.floor(2d * Math.PI / aPair) - Math.floor(2d * Math.PI / aImp)) > 1e-5)
+            return null;
 
-        double aImp = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(latImp, Units.Angle.TURN)), 2d)));
-        double aPair = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(latPair, Units.Angle.TURN)), 2d)));
-        if(Math.abs(Math.floor(2d * Math.PI / aPair) - Math.floor(2d * Math.PI / aImp)) > 1e-5) return null;
-        double A = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0)) / Math.pow(Math.cos(Units.convertFrom(resultLat, Units.Angle.TURN) ), 2d)));
+        double A = Math.acos(1d - ((1d - Math.cos(2d * Math.PI * LARGEUR_0))
+                / Math.pow(Math.cos(Units.convertFrom(resultLat, Units.Angle.TURN) ), 2d)));
         double resultLong;
-        if (Double.isNaN(A)) {
+
+        if (Double.isNaN(A))
             resultLong = (mostRecent == 0) ? x0 : x1;
-        }
         else {
             double zLong0 = Math.floor(2d * Math.PI / A);
             double zLong1 = zLong0 - 1d;
@@ -56,15 +57,15 @@ public class CprDecoder {
         }
         //fin long
 
-        if (resultLat >= 0.5d) {
+        if (resultLat >= 0.5d)
             resultLat -= 1;
-        }
-        if (resultLong >= 0.5d) {
+
+        if (resultLong >= 0.5d)
             resultLong -= 1;
-        }
 
         double resultLatDegree = Units.convert(resultLat, Units.Angle.TURN, Units.Angle.DEGREE);
-        if (resultLatDegree > 90d || resultLatDegree < -90d) return null;
+        if (resultLatDegree > 90d || resultLatDegree < -90d)
+            return null;
 
         int latT32 = (int) Math.rint(Units.convert(resultLat, Units.Angle.TURN, Units.Angle.T32));
         int longT32 = (int) Math.rint(Units.convert(resultLong, Units.Angle.TURN, Units.Angle.T32));

@@ -37,13 +37,11 @@ public final class AircraftDatabase {
 
             String currLine = "";
             while ((currLine = b.readLine()) != null) {
-                if (currLine.compareTo(address.string()) >= 0) {
+                if (currLine.compareTo(address.string()) >= 0)
                     break;
-                }
             }
-            if(currLine == null || !currLine.startsWith(address.string())){
+            if(currLine == null || !currLine.startsWith(address.string()))
                 return null;
-            }
 
             String[] aircraftData = currLine.split(",", -1);
             AircraftRegistration registration = new AircraftRegistration(aircraftData[REGISTRATION_INDEX]);

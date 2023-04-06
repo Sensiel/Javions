@@ -33,10 +33,10 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public static RawMessage of(long timeStampsNs, byte[] bytes) {
         int crc24 = new Crc24(Crc24.GENERATOR).crc(bytes);
-        if (crc24 == 0) {
+        if (crc24 == 0)
             return new RawMessage(timeStampsNs, new ByteString (bytes));
-        }
-        else return null;
+        else
+            return null;
     }
 
     /**
@@ -46,7 +46,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public static int size(byte byte0){
         int DF = Bits.extractUInt(Byte.toUnsignedLong(byte0),3,5);
-        if(DF == DF_VALUE) return LENGTH;
+        if(DF == DF_VALUE)
+            return LENGTH;
         return 0;
     }
 

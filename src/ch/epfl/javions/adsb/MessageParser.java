@@ -9,9 +9,9 @@ public class MessageParser {
      * @return the instance of AircraftIdentificationMessage,AirbornePositionMessage or AirborneVelocityMessage corresponding to the given raw message
      */
     public static Message parse(RawMessage rawMessage){
-        if((rawMessage.typeCode() >= 9 && rawMessage.typeCode() <= 18) ||(rawMessage.typeCode() >= 20 && rawMessage.typeCode() <= 22)){
+        if((rawMessage.typeCode() >= 9 && rawMessage.typeCode() <= 18) ||(rawMessage.typeCode() >= 20 && rawMessage.typeCode() <= 22))
             return AirbornePositionMessage.of(rawMessage);
-        }
+
         switch (rawMessage.typeCode()){
             case 19 -> {return AirborneVelocityMessage.of(rawMessage);}
             case 1,2,3,4 -> { return AircraftIdentificationMessage.of(rawMessage);}

@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public final class PowerComputer {
-    private short[] sampleBatch;
-    private SamplesDecoder samplesDecoder;
-    private int batchSize;
-    private short[] currSample;
+    private final short[] sampleBatch;
+    private final SamplesDecoder samplesDecoder;
+    private final int batchSize;
+    private final short[] currSample;
 
     /**
      * Public Constructor
@@ -41,8 +41,14 @@ public final class PowerComputer {
             currSample[iSample % 8] = this.sampleBatch[iSample];
             currSample[(iSample + 1) % 8] = this.sampleBatch[iSample + 1];
              // The following formula is P(n) but we added 8 to each index used in the formula ( because (iSample - 6)%8 == (iSample + 2)%8 and it's easier to calculate)
-                batch[iPowerSample] = (int)Math.pow(currSample[(iSample + 2) % 8] - currSample[(iSample + 4) % 8] + currSample[(iSample + 6) % 8] - currSample[iSample % 8], 2)
-                +  (int)Math.pow(currSample[(iSample + 3) % 8] - currSample[(iSample + 5) % 8] + currSample[(iSample + 7) % 8] - currSample[(iSample + 1) % 8], 2);
+            batch[iPowerSample] = (int)Math.pow(currSample[(iSample + 2) % 8]
+                    - currSample[(iSample + 4) % 8]
+                    + currSample[(iSample + 6) % 8]
+                    - currSample[iSample % 8], 2)
+                +  (int)Math.pow(currSample[(iSample + 3) % 8]
+                    - currSample[(iSample + 5) % 8]
+                    + currSample[(iSample + 7) % 8]
+                    - currSample[(iSample + 1) % 8], 2);
         }
         return nPowerSampleRead;
     }
