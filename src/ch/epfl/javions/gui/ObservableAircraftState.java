@@ -18,11 +18,10 @@ import static javafx.collections.FXCollections.unmodifiableObservableList;
 public final class ObservableAircraftState implements AircraftStateSetter {
     public record AirbornePos(GeoPos pos, double altitude) {
         public AirbornePos{
-
         }
     }
 
-    //private final IcaoAddress icaoAddress;
+    private final IcaoAddress icaoAddress;
     private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
     private IntegerProperty category = new SimpleIntegerProperty();
     private ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
@@ -35,8 +34,9 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     private long lastTimeStampNsChangingTraj = 0L;
 
-    public ObservableAircraftState(String icaoAddress, AircraftData data) {
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
         Objects.requireNonNull(icaoAddress);
+        this.icaoAddress= icaoAddress;
     }
     //--------------------------------------------------------------//
     ReadOnlyIntegerProperty categoryProperty(){
@@ -102,6 +102,10 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     @Override
     public void setAltitude(double altitude){
+        if(trajectory.isEmpty()) {
+            trajectory.add(new AirbornePos(getPosition(), altitude));
+            lastTimeStampNsChangingTraj = getLastMessageTimeStampNs();
+        }
         if(lastTimeStampNsChangingTraj == getLastMessageTimeStampNs())
             trajectory.set(trajectory.size() - 1, new AirbornePos(getPosition(), altitude));
 
@@ -149,9 +153,11 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         return readOnlyTrajectory;
     }
     //TODO je sais pas trop
+    /*
     ObservableList<AirbornePos> getTrajectory(){
         return trajectory;
     }
+     */
 
     //--------------------------------------------------------------//
 
