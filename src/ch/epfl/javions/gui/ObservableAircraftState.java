@@ -22,6 +22,9 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     }
 
     private final IcaoAddress icaoAddress;
+
+    private final AircraftData data;
+
     private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
     private IntegerProperty category = new SimpleIntegerProperty();
     private ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
@@ -37,12 +40,22 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
         Objects.requireNonNull(icaoAddress);
         this.icaoAddress= icaoAddress;
+        this.data = data;
     }
+
+    public IcaoAddress address() {
+        return icaoAddress;
+    }
+
+    public AircraftData getData() {
+        return data;
+    }
+
     //--------------------------------------------------------------//
-    ReadOnlyIntegerProperty categoryProperty(){
+    public ReadOnlyIntegerProperty categoryProperty(){
         return category;
     }
-    int getCategory(){
+    public int getCategory(){
         return category.get();
     }
     @Override
@@ -57,10 +70,10 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.lastMessageTimeStampNs.set(timeStampNs);
     }
 
-    ReadOnlyLongProperty lastMessageTimeStampNsProperty(){
+    public ReadOnlyLongProperty lastMessageTimeStampNsProperty(){
         return lastMessageTimeStampNs;
     }
-    long getLastMessageTimeStampNs(){
+    public long getLastMessageTimeStampNs(){
         return lastMessageTimeStampNs.get();
     }
 
@@ -71,10 +84,10 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.callSign.set(callSign);
     }
 
-    ReadOnlyObjectProperty<CallSign> callSignProperty(){
+    public ReadOnlyObjectProperty<CallSign> callSignProperty(){
         return callSign;
     }
-    CallSign getCallSign(){
+    public CallSign getCallSign(){
         return callSign.get();
     }
 
@@ -91,10 +104,10 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.position.set(position);
     }
 
-    ReadOnlyObjectProperty<GeoPos> positionProperty(){
+    public ReadOnlyObjectProperty<GeoPos> positionProperty(){
         return position;
     }
-    GeoPos getPosition(){
+    public GeoPos getPosition(){
         return position.get();
     }
 
@@ -112,10 +125,10 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.altitude.set(altitude);
     }
 
-    ReadOnlyDoubleProperty altitudeProperty(){
+    public ReadOnlyDoubleProperty altitudeProperty(){
         return altitude;
     }
-    double getAltitude(){
+    public double getAltitude(){
         return altitude.get();
     }
 
@@ -126,10 +139,10 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         this.velocity.set(velocity);
     }
 
-    ReadOnlyDoubleProperty velocityProperty(){
+    public ReadOnlyDoubleProperty velocityProperty(){
         return velocity;
     }
-    double getVelocity(){
+    public double getVelocity(){
         return velocity.get();
     }
 
@@ -152,12 +165,6 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     ObservableList<AirbornePos> trajectoryProperty(){
         return readOnlyTrajectory;
     }
-    //TODO je sais pas trop
-    /*
-    ObservableList<AirbornePos> getTrajectory(){
-        return trajectory;
-    }
-     */
 
     //--------------------------------------------------------------//
 

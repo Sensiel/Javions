@@ -21,12 +21,12 @@ class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setCallSign(CallSign callSign) {
-        System.out.println("indicatif : " + callSign);
+        //System.out.println("indicatif : " + callSign);
     }
 
     @Override
     public void setPosition(GeoPos position) {
-        System.out.println("position : " + position);
+        //System.out.println("position : " + position);
     }
 
     @Override

@@ -6,10 +6,8 @@ import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.collections.ObservableSet;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 import static javafx.collections.FXCollections.observableSet;
 
@@ -34,17 +32,26 @@ public final class AircraftStateManager {
     }
 
     public void updateWithMessage(Message message){
+        //TODO peut être enlever ce test
+        if(message == null)
+            return;
+        if(!table.containsKey(message.icaoAddress())){
+            try {
+                table.put(message.icaoAddress(),
+                        new AircraftStateAccumulator<>(new ObservableAircraftState(message.icaoAddress(),
+                                dataBase.get(message.icaoAddress()))));
+            } catch (IOException ignored) {System.out.println("Problem " + message.icaoAddress());}
+        }
         AircraftStateAccumulator<ObservableAircraftState> asa = table.get(message.icaoAddress());
         asa.update(message);
         lastTimeStampNs = message.timeStampNs();
-
     }
 
     public void purge(){
         for(ObservableAircraftState aircraftState : states()){
-        if(lastTimeStampNs - aircraftState.getLastMessageTimeStampNs() >= 60E10){
-            states().remove(aircraftState);
-        }
+            if(lastTimeStampNs - aircraftState.getLastMessageTimeStampNs() >= 60E10){
+                states().remove(aircraftState);
+            }
         }
     }
 
