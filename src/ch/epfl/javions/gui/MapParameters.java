@@ -5,9 +5,9 @@ import ch.epfl.javions.Preconditions;
 import javafx.beans.property.*;
 
 public final class MapParameters {
-    private IntegerProperty zoom = new SimpleIntegerProperty();
-    private DoubleProperty minX = new SimpleDoubleProperty();
-    private DoubleProperty minY = new SimpleDoubleProperty();
+    private final IntegerProperty zoom = new SimpleIntegerProperty();
+    private final DoubleProperty minX = new SimpleDoubleProperty();
+    private final DoubleProperty minY = new SimpleDoubleProperty();
 
     public MapParameters(int zoom, double minX, double minY){
         Preconditions.checkArgument(zoom >= 6 && zoom <= 19);
@@ -16,11 +16,22 @@ public final class MapParameters {
         this.minY.set(minY);
     }
     public void scroll(double x ,double y){
-        minX.set(getMinX()+x);
-        minY.set(getMinY()+y);
+        minX.set(getMinX() + x);
+        minY.set(getMinY() + y);
     }
     public void changeZoomLevel(int difference){
-        zoom.set(Math2.clamp(6,getZoom() + difference,19));
+        int realDiff = Math2.clamp(6,getZoom() + difference,19) - getZoom();
+        if(realDiff == 0)
+            return;
+        zoom.set(getZoom() + realDiff);
+        if(realDiff > 0){
+            minX.set(getMinX() * (1 << realDiff));
+            minY.set(getMinY() * (1 << realDiff));
+        }
+        else{
+            minX.set(getMinX() / (1 << -realDiff));
+            minY.set(getMinY() / (1 << -realDiff));
+        }
     }
     //------------------------------------------------------------
     public  ReadOnlyIntegerProperty zoomProperty(){
@@ -32,7 +43,6 @@ public final class MapParameters {
     //------------------------------------------------------------
     public  ReadOnlyDoubleProperty minXProperty(){
         return minX;
-
     }
     public double getMinX(){
         return minX.get();
