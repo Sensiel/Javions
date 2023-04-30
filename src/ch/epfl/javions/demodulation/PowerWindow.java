@@ -6,6 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+/**
+ * Represent a window of fixed size over a sequence of power samples produced by a power computer
+ * @author Imane Raihane (362230)
+ * @author Zablocki Victor (361602)
+ */
 public final class PowerWindow {
     private final static int BATCH_SIZE = 1 << 16;
     private int[] batch1;

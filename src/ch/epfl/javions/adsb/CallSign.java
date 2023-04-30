@@ -4,8 +4,13 @@ import ch.epfl.javions.Preconditions;
 
 import java.util.regex.Pattern;
 
+/**
+ * Represent a call sign
+ * @author Imane Raihane (362230)
+ * @param string : the string associated to the call sign
+ */
 public record CallSign(String string) {
-    private static final Pattern CallSignRegex = Pattern.compile("[A-Z0-9 ]{0,8}");
+    private static final Pattern CALL_SIGN_REGEX = Pattern.compile("[A-Z0-9 ]{0,8}");
     /**
      * Compact Constructor
      * @param string : the string associated to the call sign
@@ -20,6 +25,6 @@ public record CallSign(String string) {
      * @return isValid : a boolean indicating if the given CallSign is valid
      */
     private static boolean isValidCallSign(String string){
-        return CallSignRegex.matcher(string).matches() || string.isEmpty();
+        return CALL_SIGN_REGEX.matcher(string).matches() || string.isEmpty();
     }
 }

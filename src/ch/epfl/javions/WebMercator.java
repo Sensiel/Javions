@@ -1,6 +1,12 @@
 package ch.epfl.javions;
 
+/**
+ * Offer useful methods to project geographic coordinates
+ * @author Imane Raihane (362230)
+ */
 public class WebMercator {
+    public static final int ZOOM_MAX = 19;
+    public static final int ZOOM_MIN = 6;
     /**
      * Project the longitude
      * @param zoomLevel : the level of the zoom

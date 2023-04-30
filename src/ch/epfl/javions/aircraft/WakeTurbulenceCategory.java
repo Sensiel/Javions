@@ -1,5 +1,9 @@
 package ch.epfl.javions.aircraft;
 
+/**
+ * Represent the wake turbulence category of the aircraft
+ * @author Zablocki Victor (361602)
+ */
 public enum WakeTurbulenceCategory {
     LIGHT,
     MEDIUM,

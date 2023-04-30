@@ -2,6 +2,10 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
 
+/**
+ * Offer different setters of aircraft's attributes
+ * @author Imane Raihane (362230)
+ */
 public interface AircraftStateSetter {
     /**
      * Change the timestamp, of the last message received from the aircraft, to the given value

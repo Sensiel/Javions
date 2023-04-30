@@ -6,6 +6,11 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Represent a demodulator of ADS-B messages
+ * @author Imane Raihane (362230)
+ * @author Zablocki Victor (361602)
+ */
 public final class AdsbDemodulator {
     private final PowerWindow window;
     private static final long DURATION_2_SAMPLES = 100;

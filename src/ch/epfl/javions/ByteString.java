@@ -4,8 +4,13 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Objects;
 
+/**
+ * Represent an immutable sequence of bytes interpreted in an unsigned way
+ * @author Zablocki Victor (361602)
+ */
 public final class ByteString {
     private final byte[] bytes;
+    private static final HexFormat hf = HexFormat.of().withUpperCase();
 
     /**
      * Public Constructor
@@ -18,11 +23,11 @@ public final class ByteString {
     /**
      * Convert a Hexadecimal String into an array of bytes then a byteString
      * @param hexString : String in Hexadecimal representation
+     * @throws IllegalArgumentException if hexString is not of even length or if it contains a character that is not a hexadecimal digit
      * @return the byteString associated to hexString
      */
     public static ByteString ofHexadecimalString(String hexString){
         Preconditions.checkArgument(hexString.length()%2 == 0);
-        HexFormat hf = HexFormat.of().withUpperCase();
         return new ByteString(hf.parseHex(hexString));
     }
 
@@ -36,11 +41,11 @@ public final class ByteString {
     /**
      * Extract a byte at the given index
      * @param index : the chosen index
+     * @throws IndexOutOfBoundsException if index isn't valid
      * @return the integer representing the byte at the given index
      */
     public int byteAt(int index){
-        Objects.checkIndex(index, size());
-        return bytes[index] & 0xff;
+        return Byte.toUnsignedInt(bytes[index]);
     }
 
     /**
@@ -51,13 +56,13 @@ public final class ByteString {
      */
     public long bytesInRange(int fromIndex, int toIndex){
         long result = 0;
-        Preconditions.checkArgument(toIndex - fromIndex <= 8);
+        Preconditions.checkArgument(toIndex - fromIndex < Long.BYTES);
         Objects.checkFromToIndex(fromIndex, toIndex, size());
         for(int index = fromIndex; index < toIndex; index++){
-            result |= bytes[index] & 0xff;
-            result <<= 8;
+            result |= byteAt(index);
+            result <<= Byte.SIZE;
         }
-        result >>>= 8;
+        result >>>= Byte.SIZE;
         return result;
     }
 
@@ -76,7 +81,6 @@ public final class ByteString {
 
     @Override
     public String toString(){
-        HexFormat hf = HexFormat.of().withUpperCase();
         return hf.formatHex(bytes);
     }
 }

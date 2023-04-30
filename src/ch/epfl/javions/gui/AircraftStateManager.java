@@ -15,8 +15,8 @@ public final class AircraftStateManager {
     private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> table = new HashMap<>();
     private final ObservableSet<ObservableAircraftState> states = observableSet();
     private long lastTimeStampNs = 0L ;
-
     private final AircraftDatabase dataBase;
+    private final static double MINUTE_IN_NS = 60E10;
     public AircraftStateManager(AircraftDatabase data){
         dataBase = data;
     }
@@ -49,7 +49,7 @@ public final class AircraftStateManager {
 
     public void purge(){
         for(ObservableAircraftState aircraftState : states()){
-            if(lastTimeStampNs - aircraftState.getLastMessageTimeStampNs() >= 60E10){
+            if(lastTimeStampNs - aircraftState.getLastMessageTimeStampNs() >= MINUTE_IN_NS){
                 states().remove(aircraftState);
             }
         }

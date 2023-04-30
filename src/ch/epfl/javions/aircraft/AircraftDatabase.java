@@ -7,8 +7,13 @@ import java.util.zip.ZipFile;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Represent the micronics database of an aircraft
+ * @author Imane Raihane (362230)
+ * @author Zablocki Victor (361602)
+ */
 public final class AircraftDatabase {
-    private String fileName;
+    private final String fileName;
     private static final int REGISTRATION_INDEX = 1;
     private static final int DESIGNATOR_INDEX = 2;
     private static final int MODEL_INDEX = 3;
@@ -18,6 +23,7 @@ public final class AircraftDatabase {
     /**
      * Public Constructor
      * @param fileName : the name associated to the Zip File
+     * @throws NullPointerException if fileName is null
      */
     public AircraftDatabase(String fileName) {
         this.fileName = Objects.requireNonNull(fileName);
@@ -26,6 +32,7 @@ public final class AircraftDatabase {
     /**
      * Find the complementary information about an aircraft through its given IcaoAddress
      * @param address : IcaoAddress of a random aircraft
+     * @throws IOException if there's an input/output error
      * @return the aircraftData associated to the given IcaoAddress
      */
     public AircraftData get(IcaoAddress address) throws IOException {

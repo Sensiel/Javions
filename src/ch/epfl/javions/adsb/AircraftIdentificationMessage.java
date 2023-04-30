@@ -6,6 +6,14 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 
 import java.util.Objects;
 
+/**
+ * Represent an ADS-B message of identification and category
+ * @author Zablocki Victor (361602)
+ * @param timeStampNs : the time stamp of the message, expressed in nanoseconds
+ * @param icaoAddress : the ICAO address of the message
+ * @param category : the aircraft category of the message
+ * @param callSign : the callSign of the message
+ */
 public record AircraftIdentificationMessage (long timeStampNs,
                                              IcaoAddress icaoAddress,
                                              int category,
@@ -16,6 +24,8 @@ public record AircraftIdentificationMessage (long timeStampNs,
      * @param icaoAddress : the ICAO address of the message
      * @param category : the aircraft category of the message
      * @param callSign : the callSign of the message
+     * @throws NullPointerException if callSign or icaoAddress are null
+     * @throws IllegalArgumentException if timeStampNs is negative
      */
     public AircraftIdentificationMessage{
         Objects.requireNonNull(icaoAddress);
@@ -28,22 +38,20 @@ public record AircraftIdentificationMessage (long timeStampNs,
      * @return the identification message associated to the given raw message
      */
     public static AircraftIdentificationMessage of(RawMessage rawMessage){
-        String string = "";
-        if(rawMessage.typeCode() < 1 || rawMessage.typeCode() > 4)
-            return null;
-
+        long me = rawMessage.payload();
+        StringBuilder stringBuilder = new StringBuilder();
         for(int iChar = 7; iChar >= 0 ; iChar--){
-            int c = Bits.extractUInt(rawMessage.payload(),iChar*6,6);
+            int c = Bits.extractUInt(me,iChar*6,6);
             if((c >= '0' && c <= '9') || c == ' ')
-                string += (char) c;
+               stringBuilder.append((char) c);
             else if(c >= 1 && c <= 26)
-                string += (char) (c + 'A' - 1);
+                stringBuilder.append((char) (c + 'A' - 1));
             else
                 return null;
         }
-        CallSign callSign = new CallSign(string.strip());
+        CallSign callSign = new CallSign(stringBuilder.toString().trim());
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
-        int category = ((14 - rawMessage.typeCode()) << 4) | Bits.extractUInt(rawMessage.payload(),48,3);
+        int category = ((14 - rawMessage.typeCode()) << 4) | Bits.extractUInt(me,48,3);
         long timeStampsNs = rawMessage.timeStampNs();
 
         return new AircraftIdentificationMessage(timeStampsNs, icaoAddress, category, callSign);

@@ -7,6 +7,15 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 
 import java.util.Objects;
 
+/**
+ * Represent a speed message in flight
+ * @author Imane Raihane (362230)
+ * @author Zablocki Victor (361602)
+ * @param timeStampNs : the time stamp of the message in nanoseconds
+ * @param icaoAddress : the ICAO address of the sender of the message
+ * @param speed : the speed of the aircraft in m/s
+ * @param trackOrHeading : the direction of the aircraft in radians
+ */
 public record AirborneVelocityMessage(long timeStampNs,
                                       IcaoAddress icaoAddress,
                                       double speed,
@@ -36,17 +45,17 @@ public record AirborneVelocityMessage(long timeStampNs,
         if(rawMessage.typeCode() != 19) return null;
         long timeStampNs = rawMessage.timeStampNs();
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
-        long ME = rawMessage.payload();
-        int ST = Bits.extractUInt(ME,48,3) & 0xff;
-        long neededBits = Bits.extractUInt(ME,21,22);
+        long me = rawMessage.payload();
+        int st = Bits.extractUInt(me,48,3) & 0xff;
+        long neededBits = Bits.extractUInt(me,21,22);
 
-        if(ST == 1 || ST == 2){
+        if(st == 1 || st == 2){
 
             int vew = Bits.extractUInt(neededBits,11,10);
             int vns = Bits.extractUInt(neededBits,0,10);
             if(vns == 0 || vew == 0) return null;
 
-            double speed = Units.convertFrom(Math.hypot(vns - 1,vew - 1) * Math.pow(ST, 2), Units.Speed.KNOT);
+            double speed = Units.convertFrom(Math.hypot(vns - 1,vew - 1) * Math.pow(st, 2), Units.Speed.KNOT);
             double angle;
             //
             if(Bits.testBit(neededBits,10))
@@ -60,18 +69,18 @@ public record AirborneVelocityMessage(long timeStampNs,
             return new AirborneVelocityMessage(timeStampNs, icaoAddress, speed, angle);
 
         }
-        else if ((ST == 3 || ST == 4) && Bits.testBit(neededBits,21)) {
-            int HDG = Bits.extractUInt(neededBits, 11, 10);
-            double cap = Units.convertFrom(Math.scalb(HDG, -10), Units.Angle.TURN);
-            double ASKnots = ((Bits.extractUInt(neededBits, 0, 10)));
+        else if ((st == 3 || st == 4) && Bits.testBit(neededBits,21)) {
+            int hdg = Bits.extractUInt(neededBits, 11, 10);
+            double cap = Units.convertFrom(Math.scalb(hdg, -10), Units.Angle.TURN);
+            double asKnots = ((Bits.extractUInt(neededBits, 0, 10)));
 
-            if(ASKnots == 0)
+            if(asKnots == 0)
                 return null;
-            ASKnots--;
-            if(ST == 4) ASKnots *= 4;
+            asKnots--;
+            if(st == 4) asKnots *= 4;
 
-            double AS = Units.convertFrom(ASKnots, Units.Speed.KNOT);
-            return new AirborneVelocityMessage(timeStampNs, icaoAddress, AS, cap);
+            double as = Units.convertFrom(asKnots, Units.Speed.KNOT);
+            return new AirborneVelocityMessage(timeStampNs, icaoAddress, as, cap);
         }
         else
             return null;

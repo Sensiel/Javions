@@ -2,6 +2,15 @@ package ch.epfl.javions.aircraft;
 
 import java.util.Objects;
 
+/**
+ * Collect the fixed data of an aircraft
+ * @author Zablocki Victor (361602)
+ * @param registration : the registration of the aircraft
+ * @param typeDesignator : the typeDesignator of the aircraft
+ * @param model : the model of the aircraft
+ * @param description : the description of the aircraft
+ * @param wakeTurbulenceCategory : the WTC of the aircraft
+ */
 public record AircraftData(AircraftRegistration registration,
                            AircraftTypeDesignator typeDesignator,
                            String model,

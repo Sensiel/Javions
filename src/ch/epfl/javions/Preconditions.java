@@ -1,5 +1,9 @@
 package ch.epfl.javions;
 
+/**
+ * Used to verify method's preconditions (i.e. conditions that must be satisfied by arguments)
+ * @author Imane Raihane (362230)
+ */
 public final class Preconditions {
     private Preconditions(){
 

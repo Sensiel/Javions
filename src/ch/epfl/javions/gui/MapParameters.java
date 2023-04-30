@@ -2,6 +2,7 @@ package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Math2;
 import ch.epfl.javions.Preconditions;
+import ch.epfl.javions.WebMercator;
 import javafx.beans.property.*;
 
 public final class MapParameters {
@@ -10,7 +11,7 @@ public final class MapParameters {
     private final DoubleProperty minY = new SimpleDoubleProperty();
 
     public MapParameters(int zoom, double minX, double minY){
-        Preconditions.checkArgument(zoom >= 6 && zoom <= 19);
+        Preconditions.checkArgument(zoom >= WebMercator.ZOOM_MIN && zoom <= WebMercator.ZOOM_MAX);
         this.zoom.set(zoom);
         this.minX.set(minX);
         this.minY.set(minY);
@@ -20,7 +21,7 @@ public final class MapParameters {
         minY.set(getMinY() + y);
     }
     public void changeZoomLevel(int difference){
-        int realDiff = Math2.clamp(6,getZoom() + difference,19) - getZoom();
+        int realDiff = Math2.clamp(WebMercator.ZOOM_MIN,getZoom() + difference,WebMercator.ZOOM_MAX) - getZoom();
         if(realDiff == 0)
             return;
         zoom.set(getZoom() + realDiff);

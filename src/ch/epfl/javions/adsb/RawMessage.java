@@ -9,6 +9,13 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 import java.util.HexFormat;
 import java.util.Objects;
 
+/**
+ * Represents a raw ADS-B message (i.e. its ME attribute has not yet been analyzed)
+ * @author Imane Raihane (362230)
+ * @author Zablocki Victor (361602)
+ * @param timeStampNs : the time stamp of the message, expressed in nanoseconds from a given origin
+ * @param bytes : the bytes of the message
+ */
 public record RawMessage(long timeStampNs, ByteString bytes) {
     public static final int LENGTH = 14;
     private static final int DF_VALUE = 17;

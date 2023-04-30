@@ -6,7 +6,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+/**
+ * Decode the bytes from the AirSpy into signed 12-bit samples
+ * @author Imane Raihane (362230)
+ * @author Zablocki Victor (361602)
+ */
 public final class SamplesDecoder {
+    private final static int DIFFERENCE = 2048;
     private final byte[] batch;
     private final InputStream stream;
     private final int batchSize;
@@ -35,10 +41,11 @@ public final class SamplesDecoder {
      */
     public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
-        int nByteRead = stream.readNBytes(this.batch, 0, batchSize*2);
-        int nSampleRead = (int) Math.floor(nByteRead/2f);
+        int nByteRead = stream.readNBytes(this.batch, 0, batchSize*Short.BYTES);
+        int nSampleRead = nByteRead/Short.BYTES;
         for(int iByte = 0; iByte < nSampleRead; iByte++) {
-            batch[iByte] = (short) ((((this.batch[iByte*2 + 1] & 0xFF) << 8) | (this.batch[iByte*2]) & 0xFF) - 2048);
+            batch[iByte] = (short) ((((Byte.toUnsignedInt(this.batch[iByte*2 + 1])) << 8) |
+                    (Byte.toUnsignedInt(this.batch[iByte*2]))) - DIFFERENCE);
         }
         return nSampleRead;
     }

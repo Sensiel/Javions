@@ -4,8 +4,13 @@ import ch.epfl.javions.Preconditions;
 
 import java.util.regex.Pattern;
 
+/**
+ * Represent the description of the aircraft
+ * @author Zablocki Victor (361602)
+ * @param string : the string associated to the description of the aircraft
+ */
 public record AircraftDescription(String string) {
-    private static final Pattern DescriptionRegex = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
+    private static final Pattern DESCRIPTION_REGEX = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
 
     /**
      * Compact Constructor
@@ -17,6 +22,6 @@ public record AircraftDescription(String string) {
     }
 
     private static boolean isValidDescription(String string){
-        return DescriptionRegex.matcher(string).matches() || string.isEmpty();
+        return DESCRIPTION_REGEX.matcher(string).matches() || string.isEmpty();
     }
 }

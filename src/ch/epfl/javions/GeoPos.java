@@ -1,6 +1,14 @@
 package ch.epfl.javions;
 
+/**
+ * Represent geographic coordinates
+ * @author Zablocki Victor (361602)
+ * @param longitudeT32 : longitude in the T32 unit
+ * @param latitudeT32 : latitude in the T32 unit
+ */
 public record GeoPos(int longitudeT32, int latitudeT32){
+    private final static int MIN_LAT32 = -(1 << 30);
+    private final static int MAX_LAT32 = 1 << 30;
     /**
      * Compact Constructor
      * @param longitudeT32 : longitude in the T32 unit
@@ -18,7 +26,7 @@ public record GeoPos(int longitudeT32, int latitudeT32){
      */
 
     public static boolean isValidLatitudeT32(int latitudeT32){
-        return latitudeT32 >= -Math.pow(2,30) && latitudeT32 <= Math.pow(2,30);
+        return latitudeT32 >= MIN_LAT32 && latitudeT32 <= MAX_LAT32;
     }
 
     /**

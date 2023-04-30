@@ -1,6 +1,7 @@
 package ch.epfl.javions.gui;
 
 
+import ch.epfl.javions.WebMercator;
 import javafx.scene.image.Image;
 
 import java.io.*;
@@ -13,16 +14,16 @@ import java.util.LinkedHashMap;
 public final class TileManager {
     public record TileId(int zoom, int x, int y) {
         public static boolean isValid(int zoom, int x, int y) {
-            boolean zoomIsValid = zoom >= 6 && zoom <= 19;
+            boolean zoomIsValid = zoom >= WebMercator.ZOOM_MIN && zoom <= WebMercator.ZOOM_MAX;
             boolean xIsValid = x >= 0 && x < 1 << zoom;
             boolean yIsValid = y >= 0 && y < 1 << zoom;
             return zoomIsValid && xIsValid && yIsValid;
         }
     }
-
+    private static final int CASH_MEMORY_CAPACITY = 100;
     private final Path tilesPath;
     private final String serverName;
-    private final LinkedHashMap<TileManager.TileId, Image> cashMemory = new LinkedHashMap<>(100, 0.75f, true);
+    private final LinkedHashMap<TileManager.TileId, Image> cashMemory = new LinkedHashMap<>(CASH_MEMORY_CAPACITY, 0.75f, true);
 
     public TileManager(Path tilesPath, String serverName){
         this.tilesPath = tilesPath;
@@ -51,7 +52,7 @@ public final class TileManager {
             byte[] bytes = inputStream.readAllBytes();
             Image result = new Image(new ByteArrayInputStream(bytes));
 
-            if (cashMemory.size() == 100)
+            if (cashMemory.size() == CASH_MEMORY_CAPACITY)
                 cashMemory.remove(cashMemory.keySet().iterator().next());
             cashMemory.put(tileId, result);
 

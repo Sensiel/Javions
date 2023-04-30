@@ -1,5 +1,9 @@
 package ch.epfl.javions.adsb;
 
+/**
+ * Transform raw ADS-B messages into one of the three different types
+ * @author Imane Raihane (362230)
+ */
 public class MessageParser {
     private MessageParser(){}
 

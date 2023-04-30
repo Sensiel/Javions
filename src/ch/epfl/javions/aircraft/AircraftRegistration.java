@@ -4,8 +4,13 @@ import ch.epfl.javions.Preconditions;
 
 import java.util.regex.Pattern;
 
+/**
+ * Represent the registration of the Aircraft
+ * @author Imane Raihane (362230)
+ * @param string : the string  associated to the registration of the aircraft
+ */
 public record AircraftRegistration(String string) {
-    private static final Pattern RegistrationRegex = Pattern.compile("[A-Z0-9 .?/_+-]+");
+    private static final Pattern REGISTRATION_REGEX = Pattern.compile("[A-Z0-9 .?/_+-]+");
 
     /**
      * Compact Constructor
@@ -17,6 +22,6 @@ public record AircraftRegistration(String string) {
     }
 
     private static boolean isValidRegistration(String string){
-        return RegistrationRegex.matcher(string).matches() && !string.isEmpty();
+        return REGISTRATION_REGEX.matcher(string).matches() && !string.isEmpty();
     }
 }

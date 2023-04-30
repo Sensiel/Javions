@@ -5,8 +5,14 @@ import ch.epfl.javions.GeoPos;
 import java.util.Arrays;
 import java.util.Objects;
 
+/**
+ * Accumulate ADS-B messages from an aircraft to determine its state over time
+ * @author Zablocki Victor (361602)
+ * @param <T> : the state of the aircraft
+ */
 public class AircraftStateAccumulator<T extends AircraftStateSetter>{
     private final T state;
+    private final static double NEEDED_TIME_NS = 1e10;
     private AirbornePositionMessage[] messages = new AirbornePositionMessage[2];
 
     /**
@@ -38,7 +44,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter>{
             case AirbornePositionMessage apm -> {
                 messages[apm.parity()] = apm;
                 state.setAltitude(apm.altitude());
-                if(messages[(apm.parity() + 1) % 2] != null && apm.timeStampNs() - messages[(apm.parity() + 1) % 2].timeStampNs() <= 1e10){
+                if(messages[(apm.parity() + 1) % 2] != null && apm.timeStampNs() - messages[(apm.parity() + 1) % 2].timeStampNs() <= NEEDED_TIME_NS){
                     GeoPos pos = CprDecoder.decodePosition(messages[0].x(), messages[0].y(),messages[1].x(), messages[1].y(), apm.parity());
                     if(pos != null)
                         state.setPosition(pos);
