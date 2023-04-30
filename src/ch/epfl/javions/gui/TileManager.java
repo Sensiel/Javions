@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 
 public final class TileManager {
-    record TileId(int zoom, int x, int y) {
+    public record TileId(int zoom, int x, int y) {
         public static boolean isValid(int zoom, int x, int y) {
             boolean zoomIsValid = zoom >= 6 && zoom <= 19;
             boolean xIsValid = x >= 0 && x < 1 << zoom;
@@ -24,7 +24,7 @@ public final class TileManager {
     private final String serverName;
     private final LinkedHashMap<TileManager.TileId, Image> cashMemory = new LinkedHashMap<>(100, 0.75f, true);
 
-    TileManager(Path tilesPath, String serverName){
+    public TileManager(Path tilesPath, String serverName){
         this.tilesPath = tilesPath;
         this.serverName = serverName;
     }
@@ -42,7 +42,7 @@ public final class TileManager {
             return new Image(Files.newInputStream(filePath));
         }
 
-        String urlString = serverName + "/" + getTileFolder(tileId) + "/" + getTileFile(tileId);
+        String urlString = "https://" + serverName + "/" + getTileFolder(tileId) + "/" + getTileFile(tileId);
         URL url = new URL(urlString);
 
         URLConnection connection = url.openConnection();

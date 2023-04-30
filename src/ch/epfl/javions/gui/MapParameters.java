@@ -24,14 +24,8 @@ public final class MapParameters {
         if(realDiff == 0)
             return;
         zoom.set(getZoom() + realDiff);
-        if(realDiff > 0){
-            minX.set(getMinX() * (1 << realDiff));
-            minY.set(getMinY() * (1 << realDiff));
-        }
-        else{
-            minX.set(getMinX() / (1 << -realDiff));
-            minY.set(getMinY() / (1 << -realDiff));
-        }
+        minX.set(Math.scalb(getMinX(), realDiff));
+        minY.set(Math.scalb(getMinY(), realDiff));
     }
     //------------------------------------------------------------
     public  ReadOnlyIntegerProperty zoomProperty(){
