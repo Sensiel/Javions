@@ -41,7 +41,7 @@ public class CprDecoder {
         double aEven = Math.acos(1d - ((1d - Math.cos(Units.Angle.TURN * WIDTH_0))
                 / Math.pow(Math.cos(Units.convertFrom(latEven, Units.Angle.TURN)), 2d)));
 
-        if(Double.compare(Units.Angle.TURN / aEven, Units.Angle.TURN / aOdd) != 0)
+        if((int)Math.floor(Units.Angle.TURN / aEven) != (int)Math.floor(Units.Angle.TURN / aOdd))
             return null;
 
         double A = Math.acos(1d - ((1d - Math.cos(Units.Angle.TURN * WIDTH_0))

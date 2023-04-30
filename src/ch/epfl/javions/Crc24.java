@@ -49,7 +49,8 @@ public final class Crc24 {
         int[] table = new int[]{0,generator};
         for (byte b : bytes) {
             for (int j = Byte.SIZE - 1; j >= 0; j--) {
-                int currMessageBit = Bits.extractUInt(b, j, 1);
+                // Byte.toUnsignedLong() is necessary, if you don't believe it just delete it
+                int currMessageBit = Bits.extractUInt(Byte.toUnsignedLong(b), j, 1);
                 int currCRCBit = Bits.extractUInt(crc, GENERATOR_LENGTH - 1, 1);
                 crc = ((crc << 1 | currMessageBit) ^ table[currCRCBit]);
             }

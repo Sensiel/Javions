@@ -57,7 +57,7 @@ public record AirbornePositionMessage(long timeStampNs,
             finalAltitude = (part1 << 4 | part2) * 25d - 1000;
         }
         else {
-            finalAltitude = gray(alt);
+            finalAltitude = gray(shuffle(alt));
             if(Double.isNaN(finalAltitude)) return null;
         }
         finalAltitude = Units.convertFrom(finalAltitude,Units.Length.FOOT);
@@ -70,30 +70,35 @@ public record AirbornePositionMessage(long timeStampNs,
         return new AirbornePositionMessage(timeStampsNs,icaoAddress, finalAltitude,parity,lonLocal,latLocal);
     }
 
-    private static double gray(long alt){
-        long altitude = 0L;
-        double finalAltitude = 0d;
+    private static long shuffle(long alt){
+        long result = 0L;
         //We decided to do the shuffle using an index list because it was the best way to optimize tu readability and the complexity of the code
         final int[] INDEX_SHUFFLE = {9,3,10,4,11,5,6,0,7,1,8,2};
-        for(int iBit = 0; iBit < 12; iBit++){
-            long currBit = Bits.extractUInt(alt,iBit,1);
-            altitude = altitude | (currBit << INDEX_SHUFFLE[iBit]);
-
-            int lowerPart = Bits.extractUInt(altitude,0,3);
-            int upperPart = Bits.extractUInt(altitude,3,9);
-            lowerPart = (lowerPart)^(lowerPart >> 1)^(lowerPart >> 2);
-            int upGray = 0;
-            for(int i = 0 ; i < 9; i++)
-                upGray ^= upperPart >> i;
-
-            if (lowerPart == 0 || lowerPart == 5 || lowerPart == 6)
-                return Double.NaN;
-            if (lowerPart == 7) lowerPart = 5;
-
-            if(upGray % 2 == 1) lowerPart = 6 - lowerPart;
-
-            finalAltitude = -1300d + (lowerPart * 100d) + (upGray * 500d);
+        for(int iBit = 0; iBit < 12; iBit++) {
+            long currBit = Bits.extractUInt(alt, iBit, 1);
+            result = result | (currBit << INDEX_SHUFFLE[iBit]);
         }
-        return finalAltitude;
+        return result;
+    }
+
+    private static double gray(long alt){
+        double result = 0d;
+        int lowerPart = Bits.extractUInt(alt,0,3);
+        int upperPart = Bits.extractUInt(alt,3,9);
+
+        lowerPart = (lowerPart)^(lowerPart >> 1)^(lowerPart >> 2);
+        int upGray = 0;
+        for(int i = 0 ; i < 9; i++)
+            upGray ^= upperPart >> i;
+
+        if (lowerPart == 0 || lowerPart == 5 || lowerPart == 6)
+            return Double.NaN;
+        if (lowerPart == 7) lowerPart = 5;
+
+        if(upGray % 2 == 1) lowerPart = 6 - lowerPart;
+
+        result = -1300d + (lowerPart * 100d) + (upGray * 500d);
+
+        return result;
     }
 }
