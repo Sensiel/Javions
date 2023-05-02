@@ -14,7 +14,7 @@ public record AircraftRegistration(String string) {
 
     /**
      * Compact Constructor
-     * @param string : the string  associated to the registration of the aircraft
+     * @param string : the string associated to the registration of the aircraft
      * @throws IllegalArgumentException if the given string isn't valid
      */
     public AircraftRegistration{

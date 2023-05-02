@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public final class ByteString {
     private final byte[] bytes;
-    private static final HexFormat hf = HexFormat.of().withUpperCase();
+    private static final HexFormat HEX_FORMAT = HexFormat.of().withUpperCase();
 
     /**
      * Public Constructor
@@ -28,7 +28,7 @@ public final class ByteString {
      */
     public static ByteString ofHexadecimalString(String hexString){
         Preconditions.checkArgument(hexString.length()%2 == 0);
-        return new ByteString(hf.parseHex(hexString));
+        return new ByteString(HEX_FORMAT.parseHex(hexString));
     }
 
     /**
@@ -81,6 +81,6 @@ public final class ByteString {
 
     @Override
     public String toString(){
-        return hf.formatHex(bytes);
+        return HEX_FORMAT.formatHex(bytes);
     }
 }

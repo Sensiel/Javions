@@ -6,8 +6,8 @@ package ch.epfl.javions;
  * @author Zablocki Victor (361602)
  */
 public final class Units {
-    public final static double CENTI = 0.01d;
-    public final static double KILO = 1000d;
+    public final static double CENTI = 0.01d; // SI prefix
+    public final static double KILO = 1000d; // SI prefix
 
     /**
      * Defines different angle units useful to the project

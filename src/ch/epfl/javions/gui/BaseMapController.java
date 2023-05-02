@@ -8,7 +8,6 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 
@@ -18,6 +17,7 @@ public final class BaseMapController {
     private final Canvas canvas;
     private final Pane pane;
     private boolean needRedraw;
+    private final static double TILE_SIZE = 256d;
     private ObjectProperty<Point2D> lastPosMouse = new SimpleObjectProperty<>();
 
     public BaseMapController(TileManager tileManager, MapParameters mapParameters){
@@ -37,8 +37,6 @@ public final class BaseMapController {
         mapParameters.scroll(x - mapParameters.getMinX(), y - mapParameters.getMinX()); // pas certain que WebMercator permettent les additions
     }
 
-// si mapparameters changé ou dimension canvas changé --> redessin carte
-// pr faire ca : creer des auditeurs java qui detectent ces changements et appeler redrawOnNextPulse() dès que ya chgmt
 
     private void redrawIfNeeded() {
         if (!needRedraw) return;
@@ -49,13 +47,13 @@ public final class BaseMapController {
 
         GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
 
-        int minTileX = (int)Math.floor(mapParameters.getMinX()/256d);
+        int minTileX = (int)Math.floor(mapParameters.getMinX()/TILE_SIZE);
         double maxX = mapParameters.getMinX() + canvas.getWidth();
-        int maxTileX = (int)Math.floor(maxX/256d);
+        int maxTileX = (int)Math.floor(maxX/TILE_SIZE);
 
-        int minTileY = (int)Math.floor(mapParameters.getMinY()/256d);
+        int minTileY = (int)Math.floor(mapParameters.getMinY()/TILE_SIZE);
         double maxY = mapParameters.getMinY() + canvas.getHeight();
-        int maxTileY = (int)Math.floor(maxY/256d);
+        int maxTileY = (int)Math.floor(maxY/TILE_SIZE);
 
         for(int y = minTileY; y <= maxTileY; y++){
             for(int x = minTileX; x <= maxTileX; x++){
@@ -65,8 +63,8 @@ public final class BaseMapController {
                 TileManager.TileId tileId = new TileManager.TileId(mapParameters.getZoom(), x, y);
                 try{
                     graphicsContext.drawImage(tileManager.imageForTileAt(tileId),
-                            (x * 256) - mapParameters.getMinX(),
-                            (y * 256) - mapParameters.getMinY());
+                            (x * TILE_SIZE) - mapParameters.getMinX(),
+                            (y * TILE_SIZE) - mapParameters.getMinY());
 
                 }
                 catch(IOException ignored){}

@@ -6,7 +6,7 @@ package ch.epfl.javions;
  * @author Zablocki Victor (361602)
  */
 public final class Crc24 {
-    public final static int GENERATOR = 0xFFF409;
+    public final static int GENERATOR = 0xFFF409; //the generator allowing us to check the validity of Crc24
     private final static int TABLE_LENGTH = 256;
     private final int[] table;
     private static final int GENERATOR_LENGTH = 24;

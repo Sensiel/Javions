@@ -17,7 +17,8 @@ import java.util.Objects;
  * @param bytes : the bytes of the message
  */
 public record RawMessage(long timeStampNs, ByteString bytes) {
-    public static final int LENGTH = 14;
+    private static final HexFormat HEX_FORMAT = HexFormat.of().withUpperCase();
+    public static final int LENGTH = 14; // the length of the bytes' array associated to the message(i.e. 112 bits)
     private static final int DF_VALUE = 17;
 
     /**
@@ -78,7 +79,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public IcaoAddress icaoAddress(){
         long icaoAddress = bytes.bytesInRange(1,4);
-        String hexString = HexFormat.of().withUpperCase().toHexDigits(icaoAddress).substring(10);
+        String hexString = HEX_FORMAT.toHexDigits(icaoAddress).substring(10);
         return new IcaoAddress(hexString);
     }
 
