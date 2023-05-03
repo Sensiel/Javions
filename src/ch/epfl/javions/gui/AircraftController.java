@@ -129,13 +129,31 @@ public final class AircraftController {
         Group label = new Group(rect, txt);
         label.getStyleClass().add("label");
 
-        //Todo ajouter condition visible ( avec bind comme le reste )
+        label.visibleProperty().bind(mapParameters
+                .zoomProperty()
+                .greaterThanOrEqualTo(11)
+                .or(selectedAircraft.isEqualTo(state)));
         return label;
     }
 
     private Text createLabelText(ObservableAircraftState state) {
         Text txt = new Text();
-        //Todo Ben le faire quoi
+        txt.textProperty().bind(Bindings.createStringBinding(()-> {
+            String callSignOrRegistration;
+            /*----------------First Line----------------*/
+            if(state.getData() == null || state.getData().registration() == null)
+                callSignOrRegistration = (state.getCallSign() == null) ?
+                    state.address().string():
+                    state.getCallSign().string();
+            else
+                callSignOrRegistration = state.getData().registration().string();
+            /*----------------Second Line----------------*/
+            String velocity = state.getVelocity() == 0 ?
+                "?" : String.valueOf((int)state.getVelocity());
+            String altitude = state.getAltitude() == 0 ?
+                "?" : String.valueOf((int)state.getAltitude());
+            return String.format("%s\n%s km/h\u2002%s m", callSignOrRegistration, velocity, altitude);
+        },state.callSignProperty(), state.altitudeProperty(), state.velocityProperty()));
         return txt;
     }
 

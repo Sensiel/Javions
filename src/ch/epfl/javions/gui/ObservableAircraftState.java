@@ -25,15 +25,15 @@ public final class ObservableAircraftState implements AircraftStateSetter {
 
     private final AircraftData data;
 
-    private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
-    private IntegerProperty category = new SimpleIntegerProperty();
-    private ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
-    private ObjectProperty<GeoPos> position = new SimpleObjectProperty<>();
-    private ObservableList<AirbornePos> trajectory = observableArrayList();
-    private ObservableList<AirbornePos> readOnlyTrajectory = unmodifiableObservableList(trajectory);
-    private DoubleProperty altitude = new SimpleDoubleProperty();
-    private DoubleProperty velocity = new SimpleDoubleProperty();
-    private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
+    private final LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
+    private final IntegerProperty category = new SimpleIntegerProperty();
+    private final ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
+    private final ObjectProperty<GeoPos> position = new SimpleObjectProperty<>();
+    private final ObservableList<AirbornePos> trajectory = observableArrayList();
+    private final ObservableList<AirbornePos> readOnlyTrajectory = unmodifiableObservableList(trajectory);
+    private final DoubleProperty altitude = new SimpleDoubleProperty();
+    private final DoubleProperty velocity = new SimpleDoubleProperty();
+    private final DoubleProperty trackOrHeading = new SimpleDoubleProperty();
 
     private long lastTimeStampNsChangingTraj = 0L;
 
