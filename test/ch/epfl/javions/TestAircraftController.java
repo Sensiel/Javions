@@ -75,6 +75,7 @@ public final class TestAircraftController extends Application {
                     Message m = MessageParser.parse(mi.next());
                     if (m != null) asm.updateWithMessage(m);
                 }
+                asm.purge();
             }
         }.start();
     }

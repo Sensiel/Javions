@@ -97,18 +97,11 @@ public final class BaseMapController {
             mapParameters.scroll(-e.getX(), -e.getY());
         });
 
-        DoubleProperty oldMouseX = new SimpleDoubleProperty();
-        DoubleProperty oldMouseY = new SimpleDoubleProperty();
-
-        pane.setOnMousePressed(e -> {
-            oldMouseX.set(e.getX());
-            oldMouseY.set(e.getY());
-        });
+        pane.setOnMousePressed(e -> lastPosMouse.set(new Point2D(e.getX(), e.getY())));
 
         pane.setOnMouseDragged(e -> {
-            mapParameters.scroll(oldMouseX.get() - e.getX(), oldMouseY.get() - e.getY());
-            oldMouseX.set(e.getX());
-            oldMouseY.set(e.getY());
+            mapParameters.scroll(lastPosMouse.get().getX() - e.getX(), lastPosMouse.get().getY() - e.getY());
+            lastPosMouse.set(new Point2D(e.getX(), e.getY()));
         });
 
 

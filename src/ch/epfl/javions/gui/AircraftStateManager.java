@@ -18,7 +18,7 @@ public final class AircraftStateManager {
     private final ObservableSet<ObservableAircraftState> unmodifiableStates;
     private long lastTimeStampNs = 0L ;
     private final AircraftDatabase dataBase;
-    private final static double MINUTE_IN_NS = 60E10;
+    private final static double MINUTE_IN_NS = 6E10;
     public AircraftStateManager(AircraftDatabase data){
         dataBase = data;
         unmodifiableStates = unmodifiableObservableSet(states);
