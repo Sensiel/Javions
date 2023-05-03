@@ -26,7 +26,7 @@ public final class ColorRamp {
 
         Color c1 = colors[iColorBefore], c2 = colors[iColorAfter];
 
-        return c1.interpolate(c2, (indexAfter - index)/(indexAfter-indexBefore));
+        return c1.interpolate(c2, (index - indexBefore)/(indexAfter-indexBefore));
     }
 
     public static final ColorRamp PLASMA = new ColorRamp(
