@@ -78,6 +78,7 @@ public final class BaseMapController {
     }
 
     private void createListeners(){
+
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);

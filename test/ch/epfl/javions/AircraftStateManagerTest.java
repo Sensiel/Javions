@@ -26,7 +26,7 @@ public class AircraftStateManagerTest {
                 int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                 assert bytesRead == RawMessage.LENGTH;
                 ByteString message = new ByteString(bytes);
-                System.out.printf("%13d: %s\n", timeStampNs, message);
+                //System.out.printf("%13d: %s\n", timeStampNs, message);
             }
         } catch (IOException e) { /* nothing to do */ }
     }
