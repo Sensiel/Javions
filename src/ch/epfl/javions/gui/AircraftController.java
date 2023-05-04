@@ -1,23 +1,32 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
 import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.AircraftDescription;
 import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
+import ch.epfl.javions.gui.ObservableAircraftState.AirbornePos;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ObjectProperty;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
+
+import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
 public final class AircraftController {
 
@@ -61,12 +70,70 @@ public final class AircraftController {
         }
     }
     private Group createAircraftGroup(ObservableAircraftState state){
-        Group aircraft = new Group(iconAndLabel(state));
+        Group aircraft = new Group(iconAndLabel(state), trajectoryGroup(state));
         aircraft.setId(state.address().string());
         aircraft.viewOrderProperty().bind(state.altitudeProperty().negate());
-
+        aircraft.setOnMouseClicked(event -> selectedAircraft.set(state));
         return aircraft;
     }
+
+    private Group trajectoryGroup(ObservableAircraftState state){
+        Group trajectoryGroup = new Group();
+        trajectoryGroup.visibleProperty().bind(selectedAircraft.isEqualTo(state));
+        trajectoryGroup.getStyleClass().add("trajectory");
+        trajectoryGroup.visibleProperty().addListener(
+            (observable, oldValue, newValue) -> updateTrajectory(state, trajectoryGroup));
+        state.trajectoryProperty().addListener(
+            (ListChangeListener<? super AirbornePos>) c -> updateTrajectory(state, trajectoryGroup));
+        mapParameters.zoomProperty().addListener(
+            (observable, oldValue, newValue) -> updateTrajectory(state, trajectoryGroup));
+        return trajectoryGroup;
+    }
+
+    private void updateTrajectory(ObservableAircraftState state, Group trajectoryGroup) {
+        trajectoryGroup.getChildren().clear();
+
+        if(trajectoryGroup.isVisible()){
+            ObservableList<AirbornePos> trajectory = state.trajectoryProperty();
+            for(int iLine = 0; iLine < trajectory.size() - 1; iLine++) {
+                AirbornePos aPos1 = trajectory.get(iLine);
+                AirbornePos aPos2 = trajectory.get(iLine + 1);
+                if (aPos1.pos() == null)
+                    continue;
+
+                Point2D wmPos1 = new Point2D(
+                        WebMercator.x(mapParameters.getZoom(), aPos1.pos().longitude()),
+                        WebMercator.y(mapParameters.getZoom(), aPos1.pos().latitude()));
+                Point2D wmPos2 = new Point2D(
+                        WebMercator.x(mapParameters.getZoom(), aPos2.pos().longitude()),
+                        WebMercator.y(mapParameters.getZoom(), aPos2.pos().latitude()));
+
+                Line currLine = new Line(
+                        wmPos1.getX(), wmPos1.getY(),
+                        wmPos2.getX(), wmPos2.getY());
+
+                currLine.layoutXProperty().bind(mapParameters.minXProperty().negate());
+                currLine.layoutYProperty().bind(mapParameters.minYProperty().negate());
+
+                if(Double.compare(aPos1.altitude(), aPos2.altitude()) == 0)
+                    currLine.setStroke(
+                        ColorRamp.PLASMA.at(
+                            normalizedAltitude(aPos1.altitude())));
+                else{
+                    Stop s1 = new Stop(0,
+                        ColorRamp.PLASMA.at(
+                            normalizedAltitude(aPos1.altitude())));
+                    Stop s2 = new Stop(1,
+                        ColorRamp.PLASMA.at(
+                                normalizedAltitude(aPos2.altitude())));
+                    currLine.setStroke(
+                        new LinearGradient(0, 0, 1, 0, true, NO_CYCLE, s1, s2));
+                }
+                trajectoryGroup.getChildren().add(currLine);
+            }
+        }
+    }
+
 
     private Group iconAndLabel(ObservableAircraftState state){
         Group iconAndLabel = new Group(createAircraftIcon(state), createLabel(state));
@@ -96,7 +163,6 @@ public final class AircraftController {
 
         AircraftIcon aircraftIcon;
 
-        //Todo c'est pas très joli
         boolean isDataNull = data != null;
 
         aircraftIcon = AircraftIcon.iconFor(
