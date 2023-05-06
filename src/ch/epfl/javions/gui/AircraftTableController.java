@@ -23,11 +23,11 @@ import java.util.function.Consumer;
 import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS;
 
 public final class AircraftTableController {
-    private ObservableSet<ObservableAircraftState> states;
-    private ObjectProperty<ObservableAircraftState> selectedAircraft;
-    private TableView<ObservableAircraftState> table = new TableView<>();;
-    private NumberFormat numberFormat4 = NumberFormat.getInstance();
-    private NumberFormat numberFormat0 = NumberFormat.getInstance();
+    private final ObservableSet<ObservableAircraftState> states;
+    private final ObjectProperty<ObservableAircraftState> selectedAircraft;
+    private final TableView<ObservableAircraftState> table = new TableView<>();;
+    private final NumberFormat numberFormat4 = NumberFormat.getInstance();
+    private final NumberFormat numberFormat0 = NumberFormat.getInstance();
     private Consumer<ObservableAircraftState> stateConsumer;
 
     public AircraftTableController(ObservableSet<ObservableAircraftState> states,
@@ -88,23 +88,23 @@ public final class AircraftTableController {
                                                                        double width,
                                                                        NumberFormat nf,
                                                                        Callback<TableColumn.CellDataFeatures
-                                                                               <ObservableAircraftState, String>,
-                                                                               ObservableValue<String>> var){
+                                                                           <ObservableAircraftState, String>,
+                                                                           ObservableValue<String>> var){
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(title);
         column.getStyleClass().add("numeric");
         column.setPrefWidth(width);
         column.setCellValueFactory(var);
-        column.setComparator((s1, s2) ->
-                {try {
-                    return (s1 == "" || s2 == "") ? s1.compareTo(s2) :
-                            Double.compare(nf.parse(s1).doubleValue(),nf.parse(s2).doubleValue());
-                } catch (ParseException e) {throw new Error(e);}
-                }
-        );
+        column.setComparator((s1, s2) -> {
+            try {
+                return (s1 == "" || s2 == "") ? s1.compareTo(s2) :
+                    Double.compare(nf.parse(s1).doubleValue(), nf.parse(s2).doubleValue());
+            }
+            catch (ParseException e) {throw new Error(e);}
+        });
         return column;
     }
 
-    private TableColumn<ObservableAircraftState, String> textuelColumn(String title,
+    private TableColumn<ObservableAircraftState, String> textColumn(String title,
                                                                        double width,
                                                                        Callback<TableColumn.CellDataFeatures
                                                                                <ObservableAircraftState, String>,
@@ -115,51 +115,51 @@ public final class AircraftTableController {
         return column;
     }
     private void createTableLine(ObservableAircraftState state){
-        TableColumn<ObservableAircraftState,String> addressIcao = textuelColumn("OACI",60,
-                stateCellDataFeatures -> new ReadOnlyObjectWrapper<>
-                        (stateCellDataFeatures.getValue().address().string()));
+        var addressIcao = textColumn("OACI",60,
+            scdf -> new ReadOnlyObjectWrapper<>
+                (scdf.getValue().address().string()));
 
-        TableColumn<ObservableAircraftState,String> callSign =  textuelColumn("CallSign",70,
-                stateCellDataFeatures ->
-                        stateCellDataFeatures.getValue().callSignProperty().map(CallSign::string));
+        var callSign =  textColumn("CallSign",70,
+            scdf ->
+                scdf.getValue().callSignProperty().map(CallSign::string));
 
-        TableColumn<ObservableAircraftState,String> model = textuelColumn("Model",230,
-                stateCellDataFeatures -> { AircraftData ad = stateCellDataFeatures.getValue().getData();
-                    return new ReadOnlyObjectWrapper<>(ad).map(d -> d.model());});
+        var model = textColumn("Model",230,
+            scdf -> { AircraftData ad = scdf.getValue().getData();
+                return new ReadOnlyObjectWrapper<>(ad).map(AircraftData::model);});
 
 
-        TableColumn<ObservableAircraftState,String> registration = textuelColumn("Registration",90,
-                stateCellDataFeatures -> { AircraftData ad = stateCellDataFeatures.getValue().getData();
-                    return new ReadOnlyObjectWrapper<>(ad).map(d -> d.registration().string());}
+        var registration = textColumn("Registration",90,
+            scdf -> { AircraftData ad = scdf.getValue().getData();
+                return new ReadOnlyObjectWrapper<>(ad).map(d -> d.registration().string());}
         );
 
-        TableColumn<ObservableAircraftState,String> description = textuelColumn("Description",70,
-                stateCellDataFeatures -> { AircraftData ad = stateCellDataFeatures.getValue().getData();
-                    return new ReadOnlyObjectWrapper<>(ad).map(d -> d.description().string());});
+        var description = textColumn("Description",70,
+            scdf -> { AircraftData ad = scdf.getValue().getData();
+                return new ReadOnlyObjectWrapper<>(ad).map(d -> d.description().string());});
 
-        TableColumn<ObservableAircraftState,String> typeDesignator = textuelColumn("Type Designator",50,
-                stateCellDataFeatures -> { AircraftData ad = stateCellDataFeatures.getValue().getData();
-                    return new ReadOnlyObjectWrapper<>(ad).map(d -> d.typeDesignator().string());});
+        var typeDesignator = textColumn("Type Designator",50,
+            scdf -> { AircraftData ad = scdf.getValue().getData();
+                return new ReadOnlyObjectWrapper<>(ad).map(d -> d.typeDesignator().string());});
 
-        TableColumn<ObservableAircraftState,String> longitude = numericColumn("Longitude (°)", 85,
-                numberFormat4, stateCellDataFeatures ->
-                        new ReadOnlyObjectWrapper<>(numberFormat4.format(
-                                Units.convertTo(state.getPosition().longitude(),Units.Angle.DEGREE))));
+        var longitude = numericColumn("Longitude (°)", 85,
+            numberFormat4, scdf ->
+                new ReadOnlyObjectWrapper<>(numberFormat4.format(
+                    Units.convertTo(scdf.getValue().getPosition().longitude(),Units.Angle.DEGREE))));
 
-        TableColumn<ObservableAircraftState,String> latitude = numericColumn("Latitude (°)",85,
-                numberFormat4, stateCellDataFeatures ->
-                        new ReadOnlyObjectWrapper<>(numberFormat4.format(
-                                Units.convertTo(state.getPosition().latitude(),Units.Angle.DEGREE))));
+        var latitude = numericColumn("Latitude (°)",85,
+            numberFormat4, scdf ->
+                new ReadOnlyObjectWrapper<>(numberFormat4.format(
+                    Units.convertTo(scdf.getValue().getPosition().latitude(),Units.Angle.DEGREE))));
 
-        TableColumn<ObservableAircraftState,String> altitude = numericColumn("Altitude (m)",85,
-                numberFormat0, stateCellDataFeatures -> new ReadOnlyObjectWrapper<>
-                        (numberFormat0.format(state.getAltitude())));
+        var altitude = numericColumn("Altitude (m)",85,
+            numberFormat0, scdf -> new ReadOnlyObjectWrapper<>
+                (numberFormat0.format(scdf.getValue().getAltitude())));
 
-        TableColumn<ObservableAircraftState,String> velocity = numericColumn("Velocity (km/h)",85,
-                numberFormat0, stateCellDataFeatures -> new ReadOnlyObjectWrapper<>
-                        (numberFormat0.format(state.getVelocity())));
+        var velocity = numericColumn("Velocity (km/h)",85,
+            numberFormat0, scdf -> new ReadOnlyObjectWrapper<>
+                (numberFormat0.format(scdf.getValue().getVelocity())));
 
         table.getColumns().setAll(List.of(addressIcao, callSign, registration, model, typeDesignator,
-                description, longitude, latitude, altitude, velocity));
+            description, longitude, latitude, altitude, velocity));
     }
 }
