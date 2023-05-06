@@ -7,7 +7,6 @@ import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.control.TableColumn;
@@ -64,8 +63,8 @@ public final class AircraftTableController {
     private void handleStatesChanges(SetChangeListener.Change<? extends ObservableAircraftState> change) {
         if(change.wasAdded()){
             ObservableAircraftState state = change.getElementAdded();
-            createTableLine(state);
             table.getItems().add(state);
+            createTableLine();
             table.sort();
         }
         else if(change.wasRemoved()){
@@ -114,7 +113,7 @@ public final class AircraftTableController {
         column.setCellValueFactory(var);
         return column;
     }
-    private void createTableLine(ObservableAircraftState state){
+    private void createTableLine(){
         var addressIcao = textColumn("OACI",60,
             scdf -> new ReadOnlyObjectWrapper<>
                 (scdf.getValue().address().string()));
@@ -142,22 +141,22 @@ public final class AircraftTableController {
                 return new ReadOnlyObjectWrapper<>(ad).map(d -> d.typeDesignator().string());});
 
         var longitude = numericColumn("Longitude (°)", 85,
-            numberFormat4, scdf ->
-                new ReadOnlyObjectWrapper<>(numberFormat4.format(
-                    Units.convertTo(scdf.getValue().getPosition().longitude(),Units.Angle.DEGREE))));
+            numberFormat4, scdf -> scdf.getValue().positionProperty().map(pos ->
+                        numberFormat4.format(Units.convertTo(pos.longitude(),Units.Angle.DEGREE))));
 
         var latitude = numericColumn("Latitude (°)",85,
-            numberFormat4, scdf ->
-                new ReadOnlyObjectWrapper<>(numberFormat4.format(
-                    Units.convertTo(scdf.getValue().getPosition().latitude(),Units.Angle.DEGREE))));
+            numberFormat4, scdf -> scdf.getValue().positionProperty().map(pos ->
+                        numberFormat4.format(Units.convertTo(pos.latitude(),Units.Angle.DEGREE))));
 
         var altitude = numericColumn("Altitude (m)",85,
-            numberFormat0, scdf -> new ReadOnlyObjectWrapper<>
-                (numberFormat0.format(scdf.getValue().getAltitude())));
+            numberFormat0, scdf -> scdf.getValue().altitudeProperty().map
+                        (alt -> numberFormat0.format(alt.doubleValue())));
+
 
         var velocity = numericColumn("Velocity (km/h)",85,
-            numberFormat0, scdf -> new ReadOnlyObjectWrapper<>
-                (numberFormat0.format(scdf.getValue().getVelocity())));
+            numberFormat0, scdf -> scdf.getValue().velocityProperty().map(speed ->
+                        numberFormat0.format(Units.convertTo(speed.doubleValue(),Units.Speed.KILOMETER_PER_HOUR))));
+
 
         table.getColumns().setAll(List.of(addressIcao, callSign, registration, model, typeDesignator,
             description, longitude, latitude, altitude, velocity));
