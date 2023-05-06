@@ -18,7 +18,7 @@ public final class BaseMapController {
     private final Pane pane;
     private boolean needRedraw;
     private final static double TILE_SIZE = 256d;
-    private ObjectProperty<Point2D> lastPosMouse = new SimpleObjectProperty<>();
+    private final ObjectProperty<Point2D> lastPosMouse = new SimpleObjectProperty<>();
 
     public BaseMapController(TileManager tileManager, MapParameters mapParameters){
         this.tileManager = tileManager;
