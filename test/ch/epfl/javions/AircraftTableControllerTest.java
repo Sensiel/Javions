@@ -23,7 +23,7 @@ import java.util.List;
 public class AircraftTableControllerTest extends Application {
         public static void main(String[] args) { launch(args); }
 
-        static List<RawMessage> readAllMessages(String fileName)
+        static List<RawMessage>  readAllMessages(String fileName)
             throws IOException {
             List<RawMessage> result = new ArrayList<>();
             try (DataInputStream s = new DataInputStream(

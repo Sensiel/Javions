@@ -28,7 +28,7 @@ public final class BaseMapController {
 
         createListeners();
     }
-    public Pane pane(){
+    public Pane  pane(){
         return pane;
     }
     public void centerOn(GeoPos pos){

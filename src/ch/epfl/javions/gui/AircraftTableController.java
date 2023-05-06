@@ -119,7 +119,7 @@ public final class AircraftTableController {
                 stateCellDataFeatures -> new ReadOnlyObjectWrapper<>
                         (stateCellDataFeatures.getValue().address().string()));
 
-        TableColumn<ObservableAircraftState,String> callSign = textuelColumn("CallSign",70,
+        TableColumn<ObservableAircraftState,String> callSign =  textuelColumn("CallSign",70,
                 stateCellDataFeatures ->
                         stateCellDataFeatures.getValue().callSignProperty().map(CallSign::string));
 
