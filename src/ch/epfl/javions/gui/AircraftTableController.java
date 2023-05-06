@@ -37,6 +37,7 @@ public final class AircraftTableController {
 
         table.getStylesheets().add("table.css");
         table.setColumnResizePolicy(CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS);
+
         table.setTableMenuButtonVisible(true);
         table.setOnMouseClicked(e-> {
             if(e.getClickCount() == 2 && e.getButton().compareTo(MouseButton.PRIMARY) == 0 && stateConsumer != null){
@@ -49,6 +50,7 @@ public final class AircraftTableController {
 
         numberFormat0.setMinimumFractionDigits(0);
         numberFormat0.setMaximumFractionDigits(0);
+        createTableLine();
     }
     public TableView<ObservableAircraftState> pane(){ return table; }
     public void setOnDoubleClick(Consumer<ObservableAircraftState> consumer){
@@ -64,7 +66,7 @@ public final class AircraftTableController {
         if(change.wasAdded()){
             ObservableAircraftState state = change.getElementAdded();
             table.getItems().add(state);
-            createTableLine();
+
             table.sort();
         }
         else if(change.wasRemoved()){
