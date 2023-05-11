@@ -49,6 +49,10 @@ public final class AircraftStateManager {
     }
 
     public void purge(){
+        for(ObservableAircraftState state : states())
+            if(lastTimeStampNs - state.getLastMessageTimeStampNs() >= MINUTE_IN_NS)
+                table.remove(state.address());
+
         states.removeIf(aircraftState -> lastTimeStampNs - aircraftState.getLastMessageTimeStampNs() >= MINUTE_IN_NS);
     }
 
