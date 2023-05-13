@@ -1,33 +1,37 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.ByteString;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
+import ch.epfl.javions.demodulation.AdsbDemodulator;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class Main extends Application {
-
-    Queue<RawMessage> messages;
+    private Queue<RawMessage> messages;
+    private long bootTime ;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        bootTime = System.nanoTime();
         Path tileCache = Path.of("tile-cache");
         TileManager tm =
                 new TileManager(tileCache, "tile.openstreetmap.org");
@@ -48,6 +52,8 @@ public final class Main extends Application {
         AircraftController ac = new AircraftController(mp, asm.states(), selAircraft);
 
         slc.getAircraftCountProperty().bind(Bindings.size(asm.states()));
+        atc.setOnDoubleClick(oas -> bmc.centerOn(oas.getPosition()));
+        // TODO La sélection d'un aéronef dans la table provoque sa sélection dans la vue des aéronefs, et inversement
 
         StackPane sp = new StackPane(bmc.pane(), ac.pane());
         BorderPane bp =  new BorderPane();
@@ -55,6 +61,7 @@ public final class Main extends Application {
         bp.setTop(slc.pane());
 
         var root = new SplitPane(sp,bp);
+        root.setOrientation(Orientation.VERTICAL);
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.setScene(new Scene(root));
@@ -62,7 +69,31 @@ public final class Main extends Application {
 
         messages = new ConcurrentLinkedQueue<>();
 
-        //TODO lire les messages et les mettre dans la file
+        List<String> args = this.getParameters().getRaw();
+        if(args.isEmpty()){
+            AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
+            messages.add(demodulator.nextMessage());
+        } else {
+            try(DataInputStream s = new DataInputStream(
+                    new BufferedInputStream(
+                            new FileInputStream(args.get(0))))){
+                byte[] bytes = new byte[RawMessage.LENGTH];
+                while (true) {
+                    long timeStampNs = s.readLong();
+                    int bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                    assert bytesRead == RawMessage.LENGTH;
+                    ByteString message = new ByteString(bytes);
+                    long elapsedTime = System.nanoTime() - bootTime;
+                    bootTime = System.nanoTime();
+                    if(timeStampNs == elapsedTime) {
+                        messages.add(new RawMessage(timeStampNs, message));
+                    } else {
+                        Thread.sleep(timeStampNs - elapsedTime); // TODO DEBUG
+                        messages.add(new RawMessage(timeStampNs, message));
+                    }
+                }
+            } catch (EOFException e) { /* nothing to do */ }
+        }
 
         new AnimationTimer() {
             @Override
@@ -76,5 +107,5 @@ public final class Main extends Application {
         }.start();
     }
 
-    public static void main(String[] args) { launch(args); }
+    public static void main(String[] args) { launch(args);}
 }
