@@ -1,18 +1,30 @@
 package ch.epfl.javions.gui;
 
-import ch.epfl.javions.Math2;
 import ch.epfl.javions.Preconditions;
 import javafx.scene.paint.Color;
 
+/**
+ * Represent a gradient of colors
+ * @author Zablocki Victor (361602)
+ */
 public final class ColorRamp {
-
     private final Color[] colors;
 
+    /**
+     * Public Constructor
+     * @param colors : a JavaFX color sequence
+     * @throws IllegalArgumentException if the given colors are less than 2
+     */
     public ColorRamp(Color... colors){
         Preconditions.checkArgument(colors.length >= 2);
         this.colors = colors.clone();
     }
 
+    /**
+     * Get the color associated to the given index
+     * @param index : index of the color
+     * @return the color associated to the given index
+     */
     public Color at(double index){
         if(index <= 0d)
             return colors[0];
@@ -45,5 +57,5 @@ public final class ColorRamp {
             Color.valueOf("0xfa9d3bff"), Color.valueOf("0xfca935ff"),
             Color.valueOf("0xfdb52eff"), Color.valueOf("0xfdc229ff"),
             Color.valueOf("0xfccf25ff"), Color.valueOf("0xf9dd24ff"),
-            Color.valueOf("0xf5eb27ff"), Color.valueOf("0xf0f921ff"));
+            Color.valueOf("0xf5eb27ff"), Color.valueOf("0xf0f921ff"));// The Plasma gradient of colors
 }

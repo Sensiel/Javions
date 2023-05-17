@@ -21,6 +21,11 @@ import java.util.function.Consumer;
 
 import static javafx.scene.control.TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS;
 
+/**
+ * Manage the aircraft table
+ * @author Imane Raihane (362230)
+ * @author Zablocki Victor (361602)
+ */
 public final class AircraftTableController {
     private final ObservableSet<ObservableAircraftState> states;
     private final ObjectProperty<ObservableAircraftState> selectedAircraft;
@@ -29,6 +34,11 @@ public final class AircraftTableController {
     private final NumberFormat numberFormat0 = NumberFormat.getInstance();
     private Consumer<ObservableAircraftState> stateConsumer;
 
+    /**
+     * Public Constructor
+     * @param states : the observable set of aircraft states that must appear on the view (table)
+     * @param selectedAircraft : the state of the selected aircraft
+     */
     public AircraftTableController(ObservableSet<ObservableAircraftState> states,
                                    ObjectProperty<ObservableAircraftState> selectedAircraft){
         this.states = states;
@@ -52,7 +62,17 @@ public final class AircraftTableController {
         numberFormat0.setMaximumFractionDigits(0);
         createTableLine();
     }
+
+    /**
+     * Getter for the JavaFX pane
+     * @return the TableView associated to the set of aircraft states
+     */
     public TableView<ObservableAircraftState> pane(){ return table; }
+
+    /**
+     * Call consumer's accept method when there's a double click
+     * @param consumer : a lambda defining the accept method
+     */
     public void setOnDoubleClick(Consumer<ObservableAircraftState> consumer){
         stateConsumer = consumer;
     }
@@ -97,7 +117,7 @@ public final class AircraftTableController {
         column.setCellValueFactory(var);
         column.setComparator((s1, s2) -> {
             try {
-                return (s1 == "" || s2 == "") ? s1.compareTo(s2) :
+                return (s1.isEmpty() || s2.isEmpty()) ? s1.compareTo(s2) :
                     Double.compare(nf.parse(s1).doubleValue(), nf.parse(s2).doubleValue());
             }
             catch (ParseException e) {throw new Error(e);}

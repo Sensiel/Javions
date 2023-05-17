@@ -27,16 +27,24 @@ import javafx.scene.text.Text;
 
 import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
+/**
+ * Manage the view of the aircraft
+ * @author Imane Raihane (362230)
+ * @author Zablocki Victor (361602)
+ */
 public final class AircraftController {
-
     private final MapParameters mapParameters;
     private final ObservableSet<ObservableAircraftState> states;
     private ObjectProperty<ObservableAircraftState> selectedAircraft;
-
     private final static double MAX_ALTITUDE = 12000d;
-
     private final Pane pane;
 
+    /**
+     * Public Constructor
+     * @param mapParameters : the parameters of the portion of the map visible on the screen
+     * @param states : the observable set of aircraft states that must appear on the view
+     * @param selectedAircraft : the state of the selected aircraft
+     */
     public AircraftController(MapParameters mapParameters,
                               ObservableSet<ObservableAircraftState> states,
                               ObjectProperty<ObservableAircraftState> selectedAircraft){
@@ -49,6 +57,10 @@ public final class AircraftController {
         createListeners();
     }
 
+    /**
+     * Getter for the JavaFX pane
+     * @return the JavaFX pane displaying the background map
+     */
     public Pane pane(){
         return pane;
     }

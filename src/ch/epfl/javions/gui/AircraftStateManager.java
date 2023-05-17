@@ -12,6 +12,10 @@ import java.util.*;
 import static javafx.collections.FXCollections.observableSet;
 import static javafx.collections.FXCollections.unmodifiableObservableSet;
 
+/**
+ * Update the states of a set of aircraft according to the received messages
+ * @author Imane Raihane (362230)
+ */
 public final class AircraftStateManager {
     private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> table = new HashMap<>();
     private final ObservableSet<ObservableAircraftState> states = observableSet();
@@ -19,15 +23,28 @@ public final class AircraftStateManager {
     private long lastTimeStampNs = 0L ;
     private final AircraftDatabase dataBase;
     private final static double MINUTE_IN_NS = 6E10;
+
+    /**
+     * Public constructor
+     * @param data : the data of the aircraft
+     */
     public AircraftStateManager(AircraftDatabase data){
         dataBase = data;
         unmodifiableStates = unmodifiableObservableSet(states);
     }
 
+    /**
+     * Getter for the set of  states of an aircraft
+     * @return an observable set of the states of aircraft
+     */
     public ObservableSet<ObservableAircraftState> states(){
         return unmodifiableStates;
     }
 
+    /**
+     * Update the status of the aircraft that sent the given message
+     * @param message : the given message
+     */
     public void updateWithMessage(Message message){
         if(message == null)
             return;
@@ -48,6 +65,9 @@ public final class AircraftStateManager {
         lastTimeStampNs = message.timeStampNs();
     }
 
+    /**
+     * Remove from the set of observable states those that didn't receive a message in a minute since the last update
+     */
     public void purge(){
         for(ObservableAircraftState state : states())
             if(lastTimeStampNs - state.getLastMessageTimeStampNs() >= MINUTE_IN_NS)

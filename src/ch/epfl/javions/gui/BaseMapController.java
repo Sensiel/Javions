@@ -11,6 +11,10 @@ import javafx.scene.layout.Pane;
 
 import java.io.IOException;
 
+/**
+ * Manage the display and interaction with the background map
+ * @author Zablocki Victor (361602)
+ */
 public final class BaseMapController {
     private final TileManager tileManager;
     private final MapParameters mapParameters;
@@ -20,6 +24,11 @@ public final class BaseMapController {
     private final static double TILE_SIZE = 256d;
     private final ObjectProperty<Point2D> lastPosMouse = new SimpleObjectProperty<>();
 
+    /**
+     * Public Constructor
+     * @param tileManager : the tile manager used to get the tiles of the map
+     * @param mapParameters : the parameters of the visible portion of the map
+     */
     public BaseMapController(TileManager tileManager, MapParameters mapParameters){
         this.tileManager = tileManager;
         this.mapParameters = mapParameters;
@@ -28,15 +37,24 @@ public final class BaseMapController {
 
         createListeners();
     }
+
+    /**
+     * Getter for the JavaFX pane
+     * @return the JavaFX pane displaying the background map
+     */
     public Pane  pane(){
         return pane;
     }
+
+    /**
+     * Center the visible portion of the map on this point
+     * @param pos : the position of a point on the surface of the Earth
+     */
     public void centerOn(GeoPos pos){
         double x = WebMercator.x(mapParameters.getZoom(), pos.longitude());
         double y = WebMercator.y(mapParameters.getZoom(), pos.latitude());
         mapParameters.scroll(x - mapParameters.getMinX(), y - mapParameters.getMinX()); // pas certain que WebMercator permettent les additions
     }
-
 
     private void redrawIfNeeded() {
         if (!needRedraw) return;

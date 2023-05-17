@@ -27,7 +27,7 @@ public final class AdsbDemodulator {
     /**
      * Evaluate the next ADS-B message of the given sample stream in the constructor
      * @return a RawMessage associated to the ADS-B message if the end of the sample stream has not been reached
-     * @throws IOException if an input/output error
+     * @throws IOException if there's an input/output error
      */
     public RawMessage nextMessage() throws IOException {
         if(!window.isFull())

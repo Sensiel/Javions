@@ -25,10 +25,21 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * Contain the main program which represent a JavaFX application
+ * @author Imane Raihane (362230)
+ * @author Zablocki Victor (361602)
+ */
 public final class Main extends Application {
     private Queue<RawMessage> messages;
     private long bootTime ;
+    private long bootTimeAT;
 
+    /**
+     *
+     * @param primaryStage : the main window of the application
+     * @throws Exception if there's un URL exception
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         bootTime = System.nanoTime();
@@ -69,42 +80,64 @@ public final class Main extends Application {
 
         messages = new ConcurrentLinkedQueue<>();
 
-        List<String> args = this.getParameters().getRaw();
-        if(args.isEmpty()){
-            AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
-            messages.add(demodulator.nextMessage());
-        } else {
-            try(DataInputStream s = new DataInputStream(
-                    new BufferedInputStream(
-                            new FileInputStream(args.get(0))))){
-                byte[] bytes = new byte[RawMessage.LENGTH];
-                while (true) {
-                    long timeStampNs = s.readLong();
-                    int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                    assert bytesRead == RawMessage.LENGTH;
-                    ByteString message = new ByteString(bytes);
-                    long elapsedTime = System.nanoTime() - bootTime;
-                    bootTime = System.nanoTime();
-                    if(timeStampNs == elapsedTime) {
-                        messages.add(new RawMessage(timeStampNs, message));
-                    } else {
-                        Thread.sleep(timeStampNs - elapsedTime); // TODO DEBUG
-                        messages.add(new RawMessage(timeStampNs, message));
-                    }
-                }
-            } catch (EOFException e) { /* nothing to do */ }
-        }
+        var t = new Thread(() -> {
+            try {
+                collectMessages();
+            } catch (IOException e) {
+                throw new Error(e);
+            }
+        });
+        t.setDaemon(true);
+        t.start();
 
+        bootTimeAT = System.nanoTime();
         new AnimationTimer() {
             @Override
             public void handle(long now) {
                 while(!messages.isEmpty()) {
                     Message m = MessageParser.parse(messages.poll());
-                    if (m != null) asm.updateWithMessage(m);
+                    if (m != null) {
+                        asm.updateWithMessage(m);
+                        slc.getMessageCountProperty().set(slc.getMessageCountProperty().get() + 1);
+                    }
                 }
-                asm.purge();
+                if(bootTimeAT - now >= 10E9) {
+                    asm.purge();
+                }
             }
         }.start();
+    }
+    private void collectMessages() throws IOException {
+        List<String> args = this.getParameters().getRaw();
+        while (true) {
+        if (args.isEmpty()) {
+            AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
+            messages.add(demodulator.nextMessage());
+        } else {
+                try (DataInputStream s = new DataInputStream(
+                        new BufferedInputStream(
+                                new FileInputStream(args.get(0))))) {
+                    byte[] bytes = new byte[RawMessage.LENGTH];
+                    while (true) {
+                        long timeStampNs = s.readLong();
+                        int bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                        assert bytesRead == RawMessage.LENGTH;
+                        ByteString message = new ByteString(bytes);
+                        long elapsedTime = System.nanoTime() - bootTime;
+                        bootTime = System.nanoTime();
+                        if (timeStampNs == elapsedTime) {
+                            messages.add(new RawMessage(timeStampNs, message));
+                        } else {
+                            if (timeStampNs >= elapsedTime) {
+                                Thread.sleep((long) ((timeStampNs - elapsedTime) * 10E-6));
+                                messages.add(new RawMessage(timeStampNs, message));
+                            }
+                        }
+                    }
+                } catch (EOFException e) { /* nothing to do */ }
+                catch (InterruptedException e) { throw new Error();}
+            }
+        }
     }
 
     public static void main(String[] args) { launch(args);}
