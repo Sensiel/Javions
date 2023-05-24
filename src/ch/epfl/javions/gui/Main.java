@@ -34,12 +34,14 @@ public final class Main extends Application {
     private Queue<RawMessage> messages;
     private long bootTime ;
     private long bootTimeAT;
+    private final int INITIAL_ZOOM = 8;
+    private final int INITIAL_MINX = 33530;
+    private final int INITIAL_MINY = 23070;
+    private final double NANO_IN_MILLI = 10E-6;
+    private final double SECOND_IN_NANO = 10E9;
+    private final int WIDTH_WINDOW = 800;
+    private final int HEIGHT_WINDOW = 600;
 
-    /**
-     *
-     * @param primaryStage : the main window of the application
-     * @throws Exception if there's un URL exception
-     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         bootTime = System.nanoTime();
@@ -47,7 +49,7 @@ public final class Main extends Application {
         TileManager tm =
                 new TileManager(tileCache, "tile.openstreetmap.org");
         MapParameters mp =
-                new MapParameters(8, 33530, 23070);
+                new MapParameters(INITIAL_ZOOM, INITIAL_MINX, INITIAL_MINY);
 
         URL dbUrl = getClass().getResource("/aircraft.zip");
         assert dbUrl != null;
@@ -73,8 +75,8 @@ public final class Main extends Application {
 
         var root = new SplitPane(sp,bp);
         root.setOrientation(Orientation.VERTICAL);
-        primaryStage.setMinWidth(800);
-        primaryStage.setMinHeight(600);
+        primaryStage.setMinWidth(WIDTH_WINDOW);
+        primaryStage.setMinHeight(HEIGHT_WINDOW);
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
@@ -84,7 +86,7 @@ public final class Main extends Application {
             try {
                 collectMessages();
             } catch (IOException e) {
-                throw new Error(e);
+                throw new UncheckedIOException(e);
             }
         });
         t.setDaemon(true);
@@ -101,7 +103,7 @@ public final class Main extends Application {
                         slc.getMessageCountProperty().set(slc.getMessageCountProperty().get() + 1);
                     }
                 }
-                if(bootTimeAT - now >= 10E9) {
+                if(bootTimeAT - now >= SECOND_IN_NANO) {
                     asm.purge();
                 }
             }
@@ -129,7 +131,7 @@ public final class Main extends Application {
                             messages.add(new RawMessage(timeStampNs, message));
                         } else {
                             if (timeStampNs >= elapsedTime) {
-                                Thread.sleep((long) ((timeStampNs - elapsedTime) * 10E-6));
+                                Thread.sleep((long) ((timeStampNs - elapsedTime) * NANO_IN_MILLI));
                                 messages.add(new RawMessage(timeStampNs, message));
                             }
                         }

@@ -18,6 +18,11 @@ public record AircraftIdentificationMessage (long timeStampNs,
                                              IcaoAddress icaoAddress,
                                              int category,
                                              CallSign callSign) implements Message{
+    private static final int CA_SIZE = 3;
+    private static final int CA_START_INDEX = 48;
+
+    private static final int CALLSIGN_CHARACTERS = 8;
+
     /**
      * Compact Constructor
      * @param timeStampNs : the time stamp of the message, expressed in nanoseconds
@@ -40,7 +45,7 @@ public record AircraftIdentificationMessage (long timeStampNs,
     public static AircraftIdentificationMessage of(RawMessage rawMessage){
         long me = rawMessage.payload();
         StringBuilder stringBuilder = new StringBuilder();
-        for(int iChar = 7; iChar >= 0 ; iChar--){
+        for(int iChar = CALLSIGN_CHARACTERS - 1 ; iChar >= 0 ; iChar--){
             int c = Bits.extractUInt(me,iChar*6,6);
             if((c >= '0' && c <= '9') || c == ' ')
                stringBuilder.append((char) c);
@@ -51,7 +56,7 @@ public record AircraftIdentificationMessage (long timeStampNs,
         }
         CallSign callSign = new CallSign(stringBuilder.toString().trim());
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
-        int category = ((14 - rawMessage.typeCode()) << 4) | Bits.extractUInt(me,48,3);
+        int category = ((14 - rawMessage.typeCode()) << 4) | Bits.extractUInt(me,CA_START_INDEX,CA_SIZE);
         long timeStampsNs = rawMessage.timeStampNs();
 
         return new AircraftIdentificationMessage(timeStampsNs, icaoAddress, category, callSign);

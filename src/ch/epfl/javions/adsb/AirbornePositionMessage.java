@@ -23,6 +23,14 @@ public record AirbornePositionMessage(long timeStampNs,
                                       int parity,
                                       double x,
                                       double y) implements Message {
+    private static final int ALTITUDE_SIZE = 12;
+    private static final int LONG_LAT_SIZE = 17;
+    private static final int FORMAT_START_INDEX = 34;
+    private static final int LONG_START_INDEX = 0;
+    private static final int LAT_START_INDEX = 17;
+    private static final int ALT_START_INDEX = 36;
+    private static final int Q_GRAY_INDEX = 4;
+
     /**
      * Compact Constructor
      * @param timeStampNs : the time stamp of the message, expressed in nanoseconds from a given origin
@@ -47,11 +55,11 @@ public record AirbornePositionMessage(long timeStampNs,
      */
     public static AirbornePositionMessage of(RawMessage rawMessage){
         long me = rawMessage.payload();
-        long alt = Bits.extractUInt(me,36,12);
+        long alt = Bits.extractUInt(me,ALT_START_INDEX,ALTITUDE_SIZE);
 
         double finalAltitude;
 
-        if(Bits.testBit(alt,4)){
+        if(Bits.testBit(alt,Q_GRAY_INDEX)){
             int part1 = Bits.extractUInt(alt,5,7);
             int part2 = Bits.extractUInt(alt,0,4);
             finalAltitude = (part1 << 4 | part2) * 25d - 1000;
@@ -61,10 +69,10 @@ public record AirbornePositionMessage(long timeStampNs,
             if(Double.isNaN(finalAltitude)) return null;
         }
         finalAltitude = Units.convertFrom(finalAltitude,Units.Length.FOOT);
-        double lonLocal = Math.scalb(Bits.extractUInt(me,0,17),-17);
-        double latLocal = Math.scalb(Bits.extractUInt(me,17,17),-17);
+        double lonLocal = Math.scalb(Bits.extractUInt(me,LONG_START_INDEX,LONG_LAT_SIZE),-17);
+        double latLocal = Math.scalb(Bits.extractUInt(me,LAT_START_INDEX,LONG_LAT_SIZE),-17);
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
-        int parity = Bits.extractUInt(me,34,1);
+        int parity = Bits.extractUInt(me,FORMAT_START_INDEX,1);
         long timeStampsNs = rawMessage.timeStampNs();
 
         return new AirbornePositionMessage(timeStampsNs,icaoAddress, finalAltitude,parity,lonLocal,latLocal);
@@ -74,7 +82,7 @@ public record AirbornePositionMessage(long timeStampNs,
         long result = 0L;
         //We decided to do the shuffle using an index list because it was the best way to optimize tu readability and the complexity of the code
         final int[] INDEX_SHUFFLE = {9,3,10,4,11,5,6,0,7,1,8,2};
-        for(int iBit = 0; iBit < 12; iBit++) {
+        for(int iBit = 0; iBit < ALTITUDE_SIZE; iBit++) {
             long currBit = Bits.extractUInt(alt, iBit, 1);
             result = result | (currBit << INDEX_SHUFFLE[iBit]);
         }

@@ -20,6 +20,7 @@ public final class MapParameters {
      * @param zoom : the level of zoom of the map
      * @param minX : the x-coordinate of the top-left corner of the visible portion of the map
      * @param minY : the y-coordinate of the top-left corner of the visible portion of the map
+     * @throws IllegalArgumentException if zoom is Out of Bounds
      */
     public MapParameters(int zoom, double minX, double minY){
         Preconditions.checkArgument(zoom >= WebMercator.ZOOM_MIN && zoom <= WebMercator.ZOOM_MAX);
