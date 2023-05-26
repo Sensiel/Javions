@@ -101,7 +101,8 @@ public final class Main extends Application {
                         slc.getMessageCountProperty().set(slc.getMessageCountProperty().get() + 1);
                     }
                 }
-                if(bootTimeAT - now >= 10E9) {
+                if(now - bootTimeAT >= 1e9) {
+                    bootTimeAT = now;
                     asm.purge();
                 }
             }
@@ -110,10 +111,11 @@ public final class Main extends Application {
     private void collectMessages() throws IOException {
         List<String> args = this.getParameters().getRaw();
         while (true) {
-        if (args.isEmpty()) {
-            AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
-            messages.add(demodulator.nextMessage());
-        } else {
+            if (args.isEmpty()) {
+                AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
+                messages.add(demodulator.nextMessage());
+            }
+            else {
                 try (DataInputStream s = new DataInputStream(
                         new BufferedInputStream(
                                 new FileInputStream(args.get(0))))) {
@@ -123,15 +125,15 @@ public final class Main extends Application {
                         int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                         assert bytesRead == RawMessage.LENGTH;
                         ByteString message = new ByteString(bytes);
+
                         long elapsedTime = System.nanoTime() - bootTime;
-                        bootTime = System.nanoTime();
-                        if (timeStampNs == elapsedTime) {
+
+                        if (timeStampNs <= elapsedTime) {
                             messages.add(new RawMessage(timeStampNs, message));
-                        } else {
-                            if (timeStampNs >= elapsedTime) {
-                                Thread.sleep((long) ((timeStampNs - elapsedTime) * 10E-6));
-                                messages.add(new RawMessage(timeStampNs, message));
-                            }
+                        }
+                        else {
+                            Thread.sleep((long) ((timeStampNs - elapsedTime) * 1e-6));
+                            messages.add(new RawMessage(timeStampNs, message));
                         }
                     }
                 } catch (EOFException e) { /* nothing to do */ }

@@ -52,13 +52,13 @@ public final class StatusLineController {
 
     private Text aircraftCount(){
         Text result = new Text();
-        result.textProperty().bind(Bindings.format("Aéronefs visibles : %d", aircraftCountProperty.get()));
+        result.textProperty().bind(Bindings.format("Aéronefs visibles : %d", aircraftCountProperty));
         return result;
     }
 
     private Text messageCount(){
         Text result = new Text();
-        result.textProperty().bind(Bindings.format("Messages reçus : %d", messageCountProperty.get()));
+        result.textProperty().bind(Bindings.format("Messages reçus : %d", messageCountProperty));
         return result;
     }
 }
