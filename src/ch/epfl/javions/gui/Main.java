@@ -33,12 +33,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public final class Main extends Application {
     private Queue<RawMessage> messages;
     private long bootTime ;
-    private long bootTimeAT;
+    private long prevPurgeAT;
     private final int INITIAL_ZOOM = 8;
     private final int INITIAL_MINX = 33530;
     private final int INITIAL_MINY = 23070;
-    private final double NANO_IN_MILLI = 10E-6;
-    private final double SECOND_IN_NANO = 10E9;
+    private final double NANO_IN_MILLI = 1e-6;
+    private final double SECOND_IN_NANO = 1e9;
     private final int WIDTH_WINDOW = 800;
     private final int HEIGHT_WINDOW = 600;
 
@@ -97,7 +97,7 @@ public final class Main extends Application {
         t.setDaemon(true);
         t.start();
 
-        bootTimeAT = System.nanoTime();
+        prevPurgeAT = System.nanoTime();
         new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -108,8 +108,8 @@ public final class Main extends Application {
                         slc.getMessageCountProperty().set(slc.getMessageCountProperty().get() + 1);
                     }
                 }
-                if(now - bootTimeAT >= 1e9) {
-                    bootTimeAT = now;
+                if(now - prevPurgeAT >= SECOND_IN_NANO) {
+                    prevPurgeAT = now;
                     asm.purge();
                 }
             }
@@ -138,7 +138,7 @@ public final class Main extends Application {
                             messages.add(new RawMessage(timeStampNs, message));
                         }
                         else {
-                            Thread.sleep((long) ((timeStampNs - elapsedTime) * 1e-6));
+                            Thread.sleep((long) ((timeStampNs - elapsedTime) * NANO_IN_MILLI));
                             messages.add(new RawMessage(timeStampNs, message));
                         }
                     }
