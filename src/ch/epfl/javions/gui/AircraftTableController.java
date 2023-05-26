@@ -33,6 +33,14 @@ public final class AircraftTableController {
     private final NumberFormat numberFormat4 = NumberFormat.getInstance();
     private final NumberFormat numberFormat0 = NumberFormat.getInstance();
     private Consumer<ObservableAircraftState> stateConsumer;
+    private final int OACI_WIDTH = 60;
+    private final int CALLSIGN_DESCRIPTION_WIDTH = 70;
+    private final int MODEL_WIDTH = 230;
+    private final int REGISTRATION_WIDTH = 90;
+    private final int TYPE_DESIGNATOR_WIDTH = 50;
+    private final int NUMERIC_COLUMN_WIDTH = 85;
+    private final int SIZE_AFTER_DECMAL_PTS4 = 4;
+    private final int SIZE_AFTER_DECMAL_PTS0 = 0;
 
     /**
      * Public Constructor
@@ -55,11 +63,11 @@ public final class AircraftTableController {
             }
         });
 
-        numberFormat4.setMinimumFractionDigits(4);
-        numberFormat4.setMaximumFractionDigits(4);
+        numberFormat4.setMinimumFractionDigits(SIZE_AFTER_DECMAL_PTS4);
+        numberFormat4.setMaximumFractionDigits(SIZE_AFTER_DECMAL_PTS4);
 
-        numberFormat0.setMinimumFractionDigits(0);
-        numberFormat0.setMaximumFractionDigits(0);
+        numberFormat0.setMinimumFractionDigits(SIZE_AFTER_DECMAL_PTS0);
+        numberFormat0.setMaximumFractionDigits(SIZE_AFTER_DECMAL_PTS0);
         createTableLine();
     }
 
@@ -136,46 +144,46 @@ public final class AircraftTableController {
         return column;
     }
     private void createTableLine(){
-        var addressIcao = textColumn("OACI",60,
+        var addressIcao = textColumn("OACI",OACI_WIDTH,
             scdf -> new ReadOnlyObjectWrapper<>
                 (scdf.getValue().address().string()));
 
-        var callSign =  textColumn("CallSign",70,
+        var callSign =  textColumn("CallSign",CALLSIGN_DESCRIPTION_WIDTH,
             scdf ->
                 scdf.getValue().callSignProperty().map(CallSign::string));
 
-        var model = textColumn("Model",230,
+        var model = textColumn("Model",MODEL_WIDTH,
             scdf -> { AircraftData ad = scdf.getValue().getData();
                 return new ReadOnlyObjectWrapper<>(ad).map(AircraftData::model);});
 
 
-        var registration = textColumn("Registration",90,
+        var registration = textColumn("Registration",REGISTRATION_WIDTH,
             scdf -> { AircraftData ad = scdf.getValue().getData();
                 return new ReadOnlyObjectWrapper<>(ad).map(d -> d.registration().string());}
         );
 
-        var description = textColumn("Description",70,
+        var description = textColumn("Description",CALLSIGN_DESCRIPTION_WIDTH,
             scdf -> { AircraftData ad = scdf.getValue().getData();
                 return new ReadOnlyObjectWrapper<>(ad).map(d -> d.description().string());});
 
-        var typeDesignator = textColumn("Type Designator",50,
+        var typeDesignator = textColumn("Type Designator",TYPE_DESIGNATOR_WIDTH,
             scdf -> { AircraftData ad = scdf.getValue().getData();
                 return new ReadOnlyObjectWrapper<>(ad).map(d -> d.typeDesignator().string());});
 
-        var longitude = numericColumn("Longitude (°)", 85,
+        var longitude = numericColumn("Longitude (°)", NUMERIC_COLUMN_WIDTH,
             numberFormat4, scdf -> scdf.getValue().positionProperty().map(pos ->
                         numberFormat4.format(Units.convertTo(pos.longitude(),Units.Angle.DEGREE))));
 
-        var latitude = numericColumn("Latitude (°)",85,
+        var latitude = numericColumn("Latitude (°)",NUMERIC_COLUMN_WIDTH,
             numberFormat4, scdf -> scdf.getValue().positionProperty().map(pos ->
                         numberFormat4.format(Units.convertTo(pos.latitude(),Units.Angle.DEGREE))));
 
-        var altitude = numericColumn("Altitude (m)",85,
+        var altitude = numericColumn("Altitude (m)",NUMERIC_COLUMN_WIDTH,
             numberFormat0, scdf -> scdf.getValue().altitudeProperty().map
                         (alt -> numberFormat0.format(alt.doubleValue())));
 
 
-        var velocity = numericColumn("Velocity (km/h)",85,
+        var velocity = numericColumn("Velocity (km/h)",NUMERIC_COLUMN_WIDTH,
             numberFormat0, scdf -> scdf.getValue().velocityProperty().map(speed ->
                         numberFormat0.format(Units.convertTo(speed.doubleValue(),Units.Speed.KILOMETER_PER_HOUR))));
 

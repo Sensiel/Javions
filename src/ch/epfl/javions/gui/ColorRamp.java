@@ -9,6 +9,7 @@ import javafx.scene.paint.Color;
  */
 public final class ColorRamp {
     private final Color[] colors;
+    private final int MIN_COLORS = 2;
 
     /**
      * Public Constructor
@@ -16,7 +17,7 @@ public final class ColorRamp {
      * @throws IllegalArgumentException if the given colors are less than 2
      */
     public ColorRamp(Color... colors){
-        Preconditions.checkArgument(colors.length >= 2);
+        Preconditions.checkArgument(colors.length >= MIN_COLORS);
         this.colors = colors.clone();
     }
 

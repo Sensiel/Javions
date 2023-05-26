@@ -53,6 +53,8 @@ public final class ByteString {
      * @param fromIndex : the index from where we'll start extracting
      * @param toIndex : the index where we'll end extracting
      * @return a long corresponding to the bytes between the indexes fromIndex and toIndex
+     * @throws IllegalArgumentException if the range given by the indexes is upper than 8
+     * @throws IndexOutOfBoundsException if if the sub-range is out of bounds
      */
     public long bytesInRange(int fromIndex, int toIndex){
         long result = 0;

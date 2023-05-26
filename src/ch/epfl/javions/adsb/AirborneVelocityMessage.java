@@ -20,6 +20,15 @@ public record AirborneVelocityMessage(long timeStampNs,
                                       IcaoAddress icaoAddress,
                                       double speed,
                                       double trackOrHeading) implements Message {
+    private static final int ST_SIZE = 3;
+    private static final int ST_START_INDEX = 48;
+    private static final int HDG_VEW_VNS_SIZE = 10;
+    private static final int DNS_INDEX = 10;
+    private static final int DEW_SH_INDEX = 21;
+    private static final int VEW_HDG_START_INDEX = 11;
+    private static final int AS_VNS_START_INDEX = 0;
+    private static final int AS_SIZE = 10;
+
     /**
      * Compact Constructor
      * @param timeStampNs : the time stamp of the message in nanoseconds
@@ -46,33 +55,33 @@ public record AirborneVelocityMessage(long timeStampNs,
         long timeStampNs = rawMessage.timeStampNs();
         IcaoAddress icaoAddress = rawMessage.icaoAddress();
         long me = rawMessage.payload();
-        int st = Bits.extractUInt(me,48,3) & 0xff;
+        int st = Bits.extractUInt(me,ST_START_INDEX,ST_SIZE) & 0xff;
         long neededBits = Bits.extractUInt(me,21,22);
 
         if(st == 1 || st == 2){
 
-            int vew = Bits.extractUInt(neededBits,11,10);
-            int vns = Bits.extractUInt(neededBits,0,10);
+            int vew = Bits.extractUInt(neededBits,VEW_HDG_START_INDEX, HDG_VEW_VNS_SIZE);
+            int vns = Bits.extractUInt(neededBits,AS_VNS_START_INDEX, HDG_VEW_VNS_SIZE);
             if(vns == 0 || vew == 0) return null;
 
             double speed = Units.convertFrom(Math.hypot(vns - 1,vew - 1) * Math.pow(st, 2), Units.Speed.KNOT);
             double angle;
-            //
-            if(Bits.testBit(neededBits,10))
-                 angle = Bits.testBit(neededBits,21) ? Math.atan2(1 - vew, 1 - vns) : Math.atan2(vew - 1, 1 - vns);
+
+            if(Bits.testBit(neededBits,DNS_INDEX))
+                 angle = Bits.testBit(neededBits, DEW_SH_INDEX) ? Math.atan2(1 - vew, 1 - vns) : Math.atan2(vew - 1, 1 - vns);
             else
-                 angle = Bits.testBit(neededBits,21) ? Math.atan2(1 - vew, vns - 1) : Math.atan2(vew - 1, vns - 1);
+                 angle = Bits.testBit(neededBits, DEW_SH_INDEX) ? Math.atan2(1 - vew, vns - 1) : Math.atan2(vew - 1, vns - 1);
 
             if(angle < 0)
-                angle += 2d * Math.PI;
+                angle += Units.Angle.TURN;
 
             return new AirborneVelocityMessage(timeStampNs, icaoAddress, speed, angle);
 
         }
-        else if ((st == 3 || st == 4) && Bits.testBit(neededBits,21)) {
-            int hdg = Bits.extractUInt(neededBits, 11, 10);
+        else if ((st == 3 || st == 4) && Bits.testBit(neededBits, DEW_SH_INDEX)) {
+            int hdg = Bits.extractUInt(neededBits, VEW_HDG_START_INDEX, HDG_VEW_VNS_SIZE);
             double cap = Units.convertFrom(Math.scalb(hdg, -10), Units.Angle.TURN);
-            double asKnots = ((Bits.extractUInt(neededBits, 0, 10)));
+            double asKnots = ((Bits.extractUInt(neededBits, AS_VNS_START_INDEX, AS_SIZE)));
 
             if(asKnots == 0)
                 return null;

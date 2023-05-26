@@ -25,6 +25,7 @@ public class CprDecoder {
      * @param y1 : the local latitude of an odd message
      * @param mostRecent : the parity of the most recent message
      * @return the geographical position corresponding to the given normalized local positions
+     * @throws IllegalArgumentException if mostRecent is different than 1 or 0
      */
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
         Preconditions.checkArgument(mostRecent == 1 || mostRecent == 0);
@@ -36,36 +37,21 @@ public class CprDecoder {
         double resultLat;
         resultLat = (mostRecent == 0) ? latEven : latOdd;
 
-        double aOdd = Math.acos(1d - ((1d - Math.cos(Units.Angle.TURN * WIDTH_0))
-                / Math.pow(Math.cos(Units.convertFrom(latOdd, Units.Angle.TURN)), 2d)));
-        double aEven = Math.acos(1d - ((1d - Math.cos(Units.Angle.TURN * WIDTH_0))
-                / Math.pow(Math.cos(Units.convertFrom(latEven, Units.Angle.TURN)), 2d)));
-
-        if((int)Math.floor(Units.Angle.TURN / aEven) != (int)Math.floor(Units.Angle.TURN / aOdd))
+        if(isANotValid(latOdd,latEven))
             return null;
 
-        double A = Math.acos(1d - ((1d - Math.cos(Units.Angle.TURN * WIDTH_0))
+        double a = Math.acos(1d - ((1d - Math.cos(Units.Angle.TURN * WIDTH_0))
                 / Math.pow(Math.cos(Units.convertFrom(resultLat, Units.Angle.TURN) ), 2d)));
         double resultLong;
 
-        if (Double.isNaN(A))
+        if (Double.isNaN(a))
             resultLong = (mostRecent == 0) ? x0 : x1;
         else {
-            double zLong0 = Math.floor(Units.Angle.TURN / A);
-            double zLong1 = zLong0 - 1d;
-            double zoneLong = Math.rint((x0 * zLong1) - (x1 * zLong0));
-
-            if (zoneLong < 0)
-                resultLong = (mostRecent == 0) ? (1d / zLong0) * (zoneLong + zLong0 + x0) : (1d / zLong1) * (zoneLong + zLong1 + x1);
-            else
-                resultLong = (mostRecent == 0) ? (1d / zLong0) * (zoneLong + x0) : (1d / zLong1) * (zoneLong + x1);
+            resultLong = evaluateLong(mostRecent,a,x0,x1);
         }
 
-        if (resultLat >= 0.5d)
-            resultLat -= 1;
-
-        if (resultLong >= 0.5d)
-            resultLong -= 1;
+        resultLat = checkPosBounds(resultLat);
+        resultLong = checkPosBounds(resultLong);
 
         int latT32 = (int) Math.rint(Units.convert(resultLat, Units.Angle.TURN, Units.Angle.T32));
         int longT32 = (int) Math.rint(Units.convert(resultLong, Units.Angle.TURN, Units.Angle.T32));
@@ -73,6 +59,29 @@ public class CprDecoder {
         if(!GeoPos.isValidLatitudeT32(latT32)) return null;
 
         return new GeoPos(longT32, latT32);
+    }
+    private static boolean isANotValid(double latOdd, double latEven){
+        double aOdd = Math.acos(1d - ((1d - Math.cos(Units.Angle.TURN * WIDTH_0))
+                / Math.pow(Math.cos(Units.convertFrom(latOdd, Units.Angle.TURN)), 2d)));
+        double aEven = Math.acos(1d - ((1d - Math.cos(Units.Angle.TURN * WIDTH_0))
+                / Math.pow(Math.cos(Units.convertFrom(latEven, Units.Angle.TURN)), 2d)));
+        return (int)Math.floor(Units.Angle.TURN / aEven) != (int)Math.floor(Units.Angle.TURN / aOdd);
+    }
+    private static double evaluateLong(int mostRecent, double a,double x0,double x1){
+        double resultLong;
+        double zLong0 = Math.floor(Units.Angle.TURN / a);
+        double zLong1 = zLong0 - 1d;
+        double zoneLong = Math.rint((x0 * zLong1) - (x1 * zLong0));
+        if (zoneLong < 0)
+            resultLong = (mostRecent == 0) ? (1d / zLong0) * (zoneLong + zLong0 + x0) : (1d / zLong1) * (zoneLong + zLong1 + x1);
+        else
+            resultLong = (mostRecent == 0) ? (1d / zLong0) * (zoneLong + x0) : (1d / zLong1) * (zoneLong + x1);
+        return resultLong;
+    }
+    private static double checkPosBounds(double pos){
+        if (pos >= 0.5d)
+            pos -= 1;
+        return pos;
     }
 }
 
