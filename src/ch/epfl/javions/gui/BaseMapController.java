@@ -53,7 +53,8 @@ public final class BaseMapController {
     public void centerOn(GeoPos pos){
         double x = WebMercator.x(mapParameters.getZoom(), pos.longitude());
         double y = WebMercator.y(mapParameters.getZoom(), pos.latitude());
-        mapParameters.scroll(x - mapParameters.getMinX(), y - mapParameters.getMinX());
+        mapParameters.scroll(x - mapParameters.getMinX(), y - mapParameters.getMinY());
+        mapParameters.scroll(-pane.widthProperty().get()/2d, -pane.heightProperty().get()/2d);
     }
 
     private void redrawIfNeeded() {
