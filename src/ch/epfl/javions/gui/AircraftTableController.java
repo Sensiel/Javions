@@ -104,9 +104,9 @@ public final class AircraftTableController {
     }
 
     private void handleSelectedAircraftChanges(Observable observable){
-        table.getSelectionModel().select(selectedAircraft.get());
         if(!selectedAircraft.get().equals(table.getSelectionModel().getSelectedItem()))
             table.scrollTo(selectedAircraft.get());
+        table.getSelectionModel().select(selectedAircraft.get());
     }
 
     private void handleSelectedItemProperty(Observable observable){
